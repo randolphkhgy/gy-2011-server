@@ -14,3 +14,5 @@
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::post('/issue/generate', 'Issue\\IssueGenerateController@store');
