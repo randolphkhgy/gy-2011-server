@@ -15,4 +15,6 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/lotteries', 'LotteryController@index');
+
 Route::post('/issue/generate', 'Issue\\IssueGenerateController@store');

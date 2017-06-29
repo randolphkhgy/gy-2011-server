@@ -3,12 +3,14 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Lottery;
 
 class LotteryController extends Controller
 {
     public function index()
     {
-        // TODO implements index()
+        $data = Lottery::paginate(15);
+        return response()->json($data);
     }
 
     public function create()
