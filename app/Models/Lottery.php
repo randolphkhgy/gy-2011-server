@@ -43,7 +43,7 @@ class Lottery extends Model
 
     public function getIssuesetAttribute($value)
     {
-        return unserialize($value);
+        return ($value) ? unserialize($value) : (object) [];
     }
 
     public function setIssuesetAttribute($value)
@@ -53,7 +53,7 @@ class Lottery extends Model
 
     public function getNumberruleAttribute($value)
     {
-        return unserialize($value);
+        return ($value) ? unserialize($value) : (object) [];
     }
 
     public function setNumberruleAttribute($value)
