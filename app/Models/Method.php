@@ -9,6 +9,8 @@ class Method extends Model
 {
     protected $table = 'method';
 
+    protected $primaryKey = 'methodid';
+
     protected $fillable = [
         'pid',
         'lotteryid',
@@ -57,5 +59,10 @@ class Method extends Model
     public function setNocountAttribute($value)
     {
         $this->attributes['nocount'] = Arr::accessible($value) ? serialize($value) : [];
+    }
+
+    public function lottery()
+    {
+        return $this->belongsTo(Lottery::class, 'lotteryid', 'lotteryid');
     }
 }

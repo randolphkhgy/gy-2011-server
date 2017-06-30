@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Lottery extends Model
 {
+    const COUNTRY_CHINA = 1;
+    const COUNTRY_VIETNAM = 3;
+
     protected $table = 'lottery';
 
     protected $primaryKey = 'lotteryid';
@@ -59,5 +62,10 @@ class Lottery extends Model
     public function setNumberruleAttribute($value)
     {
         $this->attributes['numberrule'] = Arr::accessible($value) ? serialize($value) : [];
+    }
+
+    public function methods()
+    {
+        return $this->hasMany(Method::class, 'lotteryid', 'lotteryid');
     }
 }
