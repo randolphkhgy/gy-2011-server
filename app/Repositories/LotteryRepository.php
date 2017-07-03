@@ -2,20 +2,11 @@
 
 namespace App\Repositories;
 
+use Illuminate\Support\Facades\Config;
 use App\Models\Lottery;
 
-class LotteryRepository
+class LotteryRepository extends ModelRepository
 {
-    /**
-     * @var \App\Models\Lottery
-     */
-    protected $model;
-
-    /**
-     * @var \Illuminate\Database\Eloquent\Builder
-     */
-    protected $query;
-
     /**
      * LotteryRepository constrctor.
      *
@@ -25,26 +16,6 @@ class LotteryRepository
     {
         $this->model = $lottery;
         $this->makeQuery();
-    }
-
-    /**
-     * @return \Illuminate\Database\Eloquent\Collection
-     */
-    public function all($columns = ['*'])
-    {
-        return $this->query->get();
-    }
-
-    /**
-     * @param  int  $perPage
-     * @param  array  $columns
-     * @param  string  $pageName
-     * @param  int|null  $page
-     * @return \Illuminate\Pagination\LengthAwarePaginator
-     */
-    public function paginate($perPage = null, $columns = ['*'], $pageName = 'page', $page = null)
-    {
-        return $this->query->paginate($perPage, $columns, $pageName, $page);
     }
 
     /**
@@ -62,14 +33,58 @@ class LotteryRepository
     }
 
     /**
+     * 包含 ID
+     *
+     * @param  array  $idArr
+     * @return $this
+     */
+    public function includes($idArr = [])
+    {
+         $this->query->orWhereIn('lotteryid', $idArr);
+         return $this;
+    }
+
+    /**
+     * 中国彩种 (含中国用户可玩的越南彩种).
+     *
+     * @return $this
+     */
+    public function shuzi()
+    {
+        $this->query
+            ->where(function ($query) {
+                // 取得可玩越南彩彩种
+                $inclusion = Config::get('lottery.shuzi.inclusion');
+
+                $this->query
+                    ->whereIn('lotteryid', $inclusion)
+                    ->orWhere('country', 1);
+            });
+
+        return $this;
+    }
+
+    /**
      * 撷取指定国家
      *
      * @param  int  $country
      * @return $this
      */
-    public function country($country)
+    public function country($country, $inclusion = false)
     {
         $this->query->where('country', $country);
+        return $this;
+    }
+
+    /**
+     * 彩种类型
+     *
+     * @param  int  $type
+     * @return this
+     */
+    public function type($type)
+    {
+        $this->query->where('lotterytype', $type);
         return $this;
     }
 
@@ -84,17 +99,6 @@ class LotteryRepository
             ->whereHas('methods', function ($query) {
                 $query->where('isclose', 0);
             });
-        return $this;
-    }
-
-    /**
-     * 全新查询
-     *
-     * @return $this
-     */
-    public function makeQuery()
-    {
-        $this->query = $this->model->newQuery();
         return $this;
     }
 }

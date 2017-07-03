@@ -52,7 +52,7 @@ class LotteryService
         $this->lotteryRepo->makeQuery();
 
         // 查询条件
-        $this->lotteryRepo->country(Lottery::COUNTRY_CHINA)->isMethodNotClosed();
+        $this->lotteryRepo->shuzi()->type(0)->isMethodNotClosed();
 
         // 撷取基本栏位与否
         ($basicColumns) && $this->lotteryRepo->basicColumns();
@@ -73,7 +73,7 @@ class LotteryService
         $this->lotteryRepo->makeQuery();
 
         // 查询条件
-        $this->lotteryRepo->isMethodNotClosed();
+        $this->lotteryRepo->type(0)->isMethodNotClosed();
 
         // 撷取基本栏位与否
         ($basicColumns) && $this->lotteryRepo->basicColumns();
