@@ -40,9 +40,14 @@ class LotteryController extends Controller
         // TODO implements store()
     }
 
-    public function show()
+    public function show($id)
     {
-        // TODO implements show()
+        $data = $this->lotterySer->get($id, true);
+        abort_unless($data, 404);
+
+        return response()->json([
+            'data' => $data,
+        ]);
     }
 
     public function edit()

@@ -19,20 +19,30 @@ abstract class ModelRepository
     /**
      * LotteryRepository constrctor.
      *
-     * @param \App\Models\Lottery $lottery
+     * @param \Illuminate\Database\Eloquent\Model $model
      */
-    public function __construct(Model $lottery)
+    public function __construct(Model $model)
     {
-        $this->model = $lottery;
+        $this->model = $model;
         $this->makeQuery();
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Collection
+     * @param  mixed  $id
+     * @return \Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Collection|static[]|static|null
+     */
+    public function find($id)
+    {
+        return $this->query->find($id);
+    }
+
+    /**
+     * @param array $columns
+     * @return \Illuminate\Database\Eloquent\Collection|static[]
      */
     public function all($columns = ['*'])
     {
-        return $this->query->get();
+        return $this->query->get($columns);
     }
 
     /**

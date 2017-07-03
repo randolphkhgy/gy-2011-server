@@ -18,5 +18,6 @@ Route::get('/', function () {
 Route::get('/lotteries', 'LotteryController@index');
 Route::get('/lotteries/shuzi', 'LotteryController@shuzi');
 Route::get('/lotteries/shuzivn', 'LotteryController@shuzivn');
+Route::get('/lottery/{id}', 'LotteryController@show');
 
-Route::post('/issue/generate', 'Issue\\IssueGenerateController@store');
+Route::post('/issue/generate', 'Issue\\IssueGenerateController@process');

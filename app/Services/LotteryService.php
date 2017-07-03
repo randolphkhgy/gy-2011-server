@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Repositories\LotteryRepository;
-use App\Models\Lottery;
 
 class LotteryService
 {
@@ -23,6 +22,30 @@ class LotteryService
     }
 
     /**
+     * @return \App\Repositories\LotteryRepository
+     */
+    protected function newQuery($basicColumns = false)
+    {
+        $this->lotteryRepo->makeQuery();
+
+        // 撷取基本栏位与否
+        ($basicColumns) && $this->lotteryRepo->basicColumns();
+
+        return $this->lotteryRepo;
+    }
+
+    /**
+     * 取得彩种
+     *
+     * @param  int  $lotteryid
+     * @return \App\Models\Lottery
+     */
+    public function get($lotteryid, $basicColumns = false)
+    {
+        return $this->newQuery($basicColumns)->find($lotteryid);
+    }
+
+    /**
      * 所有彩种.
      *
      * @param  bool  $basicColumns  是否只撷取基本栏位
@@ -30,14 +53,7 @@ class LotteryService
      */
     public function allLotteries($basicColumns = false)
     {
-        // 新查询
-        $this->lotteryRepo->makeQuery();
-
-        // 撷取基本栏位与否
-        ($basicColumns) && $this->lotteryRepo->basicColumns();
-
-        // 输出彩种列表
-        return $this->lotteryRepo->all();
+        return $this->newQuery($basicColumns)->all();
     }
 
     /**
@@ -49,13 +65,10 @@ class LotteryService
     public function allShuzi($basicColumns = false)
     {
         // 新查询
-        $this->lotteryRepo->makeQuery();
+        $this->newQuery($basicColumns);
 
         // 查询条件
         $this->lotteryRepo->shuzi()->type(0)->isMethodNotClosed();
-
-        // 撷取基本栏位与否
-        ($basicColumns) && $this->lotteryRepo->basicColumns();
 
         // 输出彩种列表
         return $this->lotteryRepo->all();
@@ -70,13 +83,10 @@ class LotteryService
     public function allShuzivn($basicColumns = false)
     {
         // 新查询
-        $this->lotteryRepo->makeQuery();
+        $this->newQuery($basicColumns);
 
         // 查询条件
         $this->lotteryRepo->type(0)->isMethodNotClosed();
-
-        // 撷取基本栏位与否
-        ($basicColumns) && $this->lotteryRepo->basicColumns();
 
         // 输出彩种列表
         return $this->lotteryRepo->all();
