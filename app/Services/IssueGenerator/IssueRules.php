@@ -3,22 +3,25 @@
 namespace App\Services\IssueGenerator;
 
 use Carbon\Carbon;
+use Illuminate\Support\Arr;
 
 class IssueRules
 {
+    use IssueRulesIssueSet, IssueRulesFormattor;
+
     /**
      * 格式化字串
      *
      * @var string
      */
-    protected $format;
+    public $format;
 
     /**
      * 流水号重置规则
      *
      * @var array
      */
-    protected $resetWhen = [
+    public $resetWhen = [
         'year'  => false,
         'month' => false,
         'day'   => false,
@@ -38,11 +41,18 @@ class IssueRules
      */
     protected $date;
 
-    public function __construct($issuerule)
+    /**
+     * IssueRules constructor.
+     * @param string $issuerule
+     * @param array  $issueset
+     */
+    public function __construct($issuerule, $issueset = [])
     {
-        $this->date = new Carbon;
+        $this->date     = new Carbon;
+        $this->issueset = $issueset;
 
         $this->initRules($issuerule);
+        $this->initIssueSet($issueset);
     }
 
     /**
@@ -89,13 +99,17 @@ class IssueRules
     /**
      * 下一个期号变动
      *
-     * @return $this
+     * @return bool
      */
     protected function next()
     {
+        if (!$this->nextTime()) {
+            return false;
+        }
+
         $this->nextNumber();
 
-        return $this;
+        return true;
     }
 
     /**
@@ -111,46 +125,17 @@ class IssueRules
     /**
      * 产生新期号
      *
-     * @return string
+     * @return string|null
      */
     public function newNumber()
     {
-        $this->next();
+        if (! $this->next()) {
+            return null;
+        }
 
         $number = $this->replaceYMD($this->format, $this->date);
         $number = $this->replaceNo($number, $this->number);
 
-        dd($number);
-
-        return '';
-    }
-
-    /**
-     * 取代 [Ymd] 字串.
-     * 大小写不敏感
-     *
-     * @param  string  $format
-     * @param  \Carbon\Carbon $date
-     * @return string
-     */
-    protected function replaceYMD($format, Carbon $date)
-    {
-        return preg_replace_callback('/[ymd]+/i', function ($match) use ($date) {
-            return $date->format($match[0]);
-        }, $format);
-    }
-
-    /**
-     * 取代 [n\d+] 字串.
-     *
-     * @param  string  $format
-     * @param  int     $no
-     * @return string
-     */
-    protected function replaceNo($format, $no)
-    {
-        return preg_replace_callback('/\[n(\d+)\]/', function ($match) use ($no) {
-            return str_pad($no, $match[1], '0', STR_PAD_LEFT);
-        }, $format);
+        return $number;
     }
 }

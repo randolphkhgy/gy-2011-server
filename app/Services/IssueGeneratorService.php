@@ -24,9 +24,9 @@ class IssueGeneratorService
         $lottery = $this->lotteryRepo->makeQuery()->find($lotteryid);
         // TODO 找不到彩种程序
 
-        $issuerule = new IssueRules($lottery->issuerule);
+        $issuerule = new IssueRules($lottery->issuerule, $lottery->issueset);
 
-        $issuerule->newNumber();
+        dd($issuerule->newNumber());
 
     }
 }

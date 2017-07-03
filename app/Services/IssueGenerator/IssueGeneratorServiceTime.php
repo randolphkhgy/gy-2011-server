@@ -17,7 +17,7 @@ trait IssueGeneratorServiceTime
 
     /**
      * 开始日期
-     * 
+     *
      * @return string
      */
     public function getStartDate()
@@ -27,7 +27,7 @@ trait IssueGeneratorServiceTime
 
     /**
      * 设置开始日期
-     * 
+     *
      * @param  string  $startdate
      * @return $this
      */
