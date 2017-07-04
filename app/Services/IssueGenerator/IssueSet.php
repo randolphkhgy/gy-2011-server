@@ -2,6 +2,7 @@
 
 namespace App\Services\IssueGenerator;
 
+use Exception;
 use Carbon\Carbon;
 use Illuminate\Support\Arr;
 
@@ -40,7 +41,7 @@ class IssueSet
     protected $firstendtime;
 
     /**
-     * 周期.
+     * 周期 (秒).
      *
      * @var int
      */
@@ -66,6 +67,12 @@ class IssueSet
      */
     protected $sort;
 
+    /**
+     * IssueSet constructor.
+     * @param array $setting
+     *
+     * @throws \Exception
+     */
     public function __construct($setting)
     {
         $this->starttime     = $this->parseTime(Arr::get($setting, 'starttime'));
@@ -90,7 +97,7 @@ class IssueSet
     }
 
     /**
-     * 建立物件实体
+     * 建立物件实体.
      *
      * @param  array  $setting
      * @return static
@@ -101,7 +108,7 @@ class IssueSet
     }
 
     /**
-     * 套用开始时间
+     * 套用开始时间.
      *
      * @param  \Carbon\Carbon  $date
      * @return \Carbon\Carbon
@@ -112,7 +119,7 @@ class IssueSet
     }
 
     /**
-     * 取得时间范围
+     * 取得时间范围.
      *
      * @param  \Carbon\Carbon  $date
      * @return array
@@ -131,7 +138,7 @@ class IssueSet
     }
 
     /**
-     * 下一次周期的时间
+     * 下一次周期的时间.
      *
      * @param  \Carbon\Carbon  $date
      * @return \Carbon\Carbon
@@ -157,7 +164,7 @@ class IssueSet
     }
 
     /**
-     * 转换时间格式
+     * 转换时间格式.
      *
      * @param  string  $string
      * @return array
@@ -183,7 +190,7 @@ class IssueSet
     }
 
     /**
-     * 取得设定数值
+     * 取得设定数值.
      *
      * @param  string  $key
      * @return mixed
@@ -194,7 +201,7 @@ class IssueSet
     }
 
     /**
-     * 已启用
+     * 是否已启用.
      *
      * @return bool
      */
