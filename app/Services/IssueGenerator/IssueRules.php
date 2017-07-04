@@ -112,6 +112,11 @@ class IssueRules
         return true;
     }
 
+    /**
+     * 移动至隔天
+     *
+     * @return void
+     */
     protected function nextDay()
     {
         $this->date->addDay()->startOfDay();
