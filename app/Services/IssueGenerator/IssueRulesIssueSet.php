@@ -12,17 +12,17 @@ trait IssueRulesIssueSet
      *
      * @var \App\Services\IssueGenerator\IssueSetCollection
      */
-    protected $issueset;
+    protected $issueSet;
 
     /**
      * 初始化彩种设定组
      *
-     * @param  array  $issueset
+     * @param  array  $issueSet
      * @return $this
      */
-    protected function initIssueSet($issueset)
+    protected function initIssueSet($issueSet)
     {
-        $this->issueset = IssueSetCollection::loadRaw($issueset)->available()->sortMe();
+        $this->issueSet = IssueSetCollection::loadRaw($issueSet)->available()->sortMe();
 
         // 设定初始时间
         $this->setUpTime();
@@ -37,7 +37,7 @@ trait IssueRulesIssueSet
      */
     protected function setUpTime()
     {
-        $active = $this->issueset->active();
+        $active = $this->issueSet->active();
         ($active) && $active->applyFirstTime($this->date);
         return $this;
     }
@@ -49,7 +49,7 @@ trait IssueRulesIssueSet
      */
     public function getIssueSet()
     {
-        return $this->issueset;
+        return $this->issueSet;
     }
 
     /**
@@ -59,7 +59,7 @@ trait IssueRulesIssueSet
      */
     public function nextIssueSet()
     {
-        $this->issueset->next();
+        $this->issueSet->next();
         $this->setUpTime();
         return $this;
     }
@@ -71,7 +71,7 @@ trait IssueRulesIssueSet
      */
     public function resetActivedIssueSet()
     {
-        $this->issueset->reset();
+        $this->issueSet->reset();
         $this->setUpTime();
         return $this;
     }
@@ -85,12 +85,12 @@ trait IssueRulesIssueSet
      */
     protected function nextTime()
     {
-        if (! $this->issueset->active()) {
+        if (! $this->issueSet->active()) {
             // 已经没有可使用的彩种设定, 跳出函式
             return false;
         }
 
-        $date = $this->issueset->active()->nextCycle($this->date);
+        $date = $this->issueSet->active()->nextCycle($this->date);
         if ($date) {
             $this->date = $date;
             return true;

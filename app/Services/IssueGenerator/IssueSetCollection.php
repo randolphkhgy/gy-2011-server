@@ -49,8 +49,8 @@ class IssueSetCollection extends Collection
      */
     public function available()
     {
-        return $this->filter(function ($issueset) {
-            return $issueset->isAvailable();
+        return $this->filter(function ($issueSet) {
+            return $issueSet->isAvailable();
         })->values();
     }
 

@@ -20,22 +20,22 @@ class IssueGeneratorService
         $this->initTime();
     }
 
-    public function generate($lotteryid)
+    public function generate($lotteryId)
     {
-        $lottery = $this->lotteryRepo->makeQuery()->find($lotteryid);
+        $lottery = $this->lotteryRepo->makeQuery()->find($lotteryId);
         if (! $lottery) {
-            throw new LotteryNotFoundException('Lottery is not found. (lotteryid=' . $lotteryid . ')');
+            throw new LotteryNotFoundException('Lottery is not found. (lotteryId=' . $lotteryId . ')');
         }
 
-        $issuerule = new IssueRules($lottery->issuerule, $lottery->issueset);
+        $issueRule = new IssueRules($lottery->issuerule, $lottery->issueset);
 
         header('Content-Type: text/plain; charset=utf-8');
         $n = 0;
-        while ($issue = $issuerule->newNumber()) {
+        while ($issue = $issueRule->newNumber()) {
             if ($n++ > 300) {
                 break;
             }
-            echo $issuerule->getDateTime(), "\t", $issue, "\r\n";
+            echo $issueRule->getDateTime(), "\t", $issue, "\r\n";
         }
         exit;
 

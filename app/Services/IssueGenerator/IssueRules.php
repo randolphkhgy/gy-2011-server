@@ -3,7 +3,6 @@
 namespace App\Services\IssueGenerator;
 
 use Carbon\Carbon;
-use Illuminate\Support\Arr;
 
 class IssueRules
 {
@@ -43,27 +42,27 @@ class IssueRules
 
     /**
      * IssueRules constructor.
-     * @param string $issuerule
-     * @param array  $issueset
+     * @param string $issueRule
+     * @param array  $issueSet
      */
-    public function __construct($issuerule, $issueset = [])
+    public function __construct($issueRule, $issueSet = [])
     {
         $this->date     = new Carbon;
-        $this->issueset = $issueset;
+        $this->issueSet = $issueSet;
 
-        $this->initRules($issuerule);
-        $this->initIssueSet($issueset);
+        $this->initRules($issueRule);
+        $this->initIssueSet($issueSet);
     }
 
     /**
      * 初始化格式化规则
      *
-     * @param  string  $issuerule
+     * @param  string  $issueRule
      * @return $this
      */
-    protected function initRules($issuerule)
+    protected function initRules($issueRule)
     {
-        if (preg_match('/^(?<format>[^\|]*)(?:\|)(?<y>[01]),(?<m>[01]),(?<d>[01])?.*$/', $issuerule, $match)) {
+        if (preg_match('/^(?<format>[^\|]*)(?:\|)(?<y>[01]),(?<m>[01]),(?<d>[01])?.*$/', $issueRule, $match)) {
             $this->format = $match['format'];
             $this->resetWhen['year']  = (bool) $match['y'];
             $this->resetWhen['month'] = (bool) $match['m'];
@@ -115,11 +114,12 @@ class IssueRules
     /**
      * 移动至隔天
      *
-     * @return void
+     * @return bool
      */
     protected function nextDay()
     {
         $this->date->addDay()->startOfDay();
+        // TODO 未完成函式
         return false;
     }
 

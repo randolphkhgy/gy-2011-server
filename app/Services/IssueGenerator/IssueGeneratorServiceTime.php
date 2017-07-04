@@ -6,13 +6,13 @@ use Carbon\Carbon;
 
 trait IssueGeneratorServiceTime
 {
-    protected $starttime;
-    protected $endtime;
+    protected $startTime;
+    protected $endTime;
 
     protected function initTime()
     {
-        $this->starttime = (new Carbon)->startOfDay();
-        $this->endtime   = (new Carbon)->endOfDay();
+        $this->startTime = (new Carbon)->startOfDay();
+        $this->endTime   = (new Carbon)->endOfDay();
     }
 
     /**
@@ -22,18 +22,18 @@ trait IssueGeneratorServiceTime
      */
     public function getStartDate()
     {
-        return $this->starttime->format('Y-m-d');
+        return $this->startTime->format('Y-m-d');
     }
 
     /**
      * 设置开始日期
      *
-     * @param  string  $startdate
+     * @param  string  $startDate
      * @return $this
      */
-    public function setStartDate($startdate)
+    public function setStartDate($startDate)
     {
-        $this->starttime = Carbon::parse($startdate)->startOfDay();
+        $this->startTime = Carbon::parse($startDate)->startOfDay();
         return $this;
     }
 
@@ -44,18 +44,18 @@ trait IssueGeneratorServiceTime
      */
     public function getEndDate()
     {
-        return $this->endtime->format('Y-m-d');
+        return $this->endTime->format('Y-m-d');
     }
 
     /**
      * 设置结束日期
      *
-     * @param  string  $enddate
+     * @param  string  $endDate
      * @return $this
      */
-    public function setEndDate($enddate)
+    public function setEndDate($endDate)
     {
-        $this->endtime = Carbon::parse($enddate)->startOfDay();
+        $this->endTime = Carbon::parse($endDate)->startOfDay();
         return $this;
     }
 }
