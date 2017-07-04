@@ -80,7 +80,7 @@ class LotteryRepository extends ModelRepository
      * 彩种类型
      *
      * @param  int  $type
-     * @return this
+     * @return $this
      */
     public function type($type)
     {
