@@ -79,7 +79,7 @@ class IssueRules
      *
      * @return \Carbon\Carbon
      */
-    protected function getDateTime()
+    public function getDateTime()
     {
         return $this->date;
     }
@@ -90,7 +90,7 @@ class IssueRules
      * @param  \Carbon\Carbon  $date
      * @return $this
      */
-    protected function setDateTime(Carbon $date)
+    public function setDateTime(Carbon $date)
     {
         $this->date = $date;
         return $this;
@@ -103,13 +103,19 @@ class IssueRules
      */
     protected function next()
     {
-        if (!$this->nextTime()) {
+        if (! $this->nextTime()) {
             return false;
         }
 
         $this->nextNumber();
 
         return true;
+    }
+
+    protected function nextDay()
+    {
+        $this->date->addDay()->startOfDay();
+        return false;
     }
 
     /**
@@ -129,13 +135,15 @@ class IssueRules
      */
     public function newNumber()
     {
-        if (! $this->next()) {
-            return null;
+        if ($this->next()) {
+            $number = $this->replaceYMD($this->format, $this->date);
+            $number = $this->replaceNo($number, $this->number);
+
+            return $number;
+        } elseif ($this->nextDay()) {
+            return $this->newNumber();
         }
 
-        $number = $this->replaceYMD($this->format, $this->date);
-        $number = $this->replaceNo($number, $this->number);
-
-        return $number;
+        return null;
     }
 }

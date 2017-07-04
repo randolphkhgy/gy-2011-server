@@ -23,9 +23,9 @@ class IssueGenerateController extends Controller
         $this->issueGenerator = $issueGenerator;
     }
 
-    public function process()
+    public function process(Request $request)
     {
-        $lotteryid = 1;
+        $lotteryid = (string) $request->input('lotteryid');
 
         $this->issueGenerator->generate($lotteryid);
 

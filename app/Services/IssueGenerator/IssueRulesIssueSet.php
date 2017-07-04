@@ -98,6 +98,18 @@ trait IssueRulesIssueSet
     }
 
     /**
+     * 下一个彩种设定
+     *
+     * @return $this
+     */
+    public function nextIssueSet()
+    {
+        $this->activedIssueSetIndex++;
+        $this->setUpTime();
+        return $this;
+    }
+
+    /**
      * 重置已启用的彩种设定
      *
      * @return $this
@@ -105,6 +117,7 @@ trait IssueRulesIssueSet
     public function resetActivedIssueSet()
     {
         $this->activedIssueSetIndex = 0;
+        $this->setUpTime();
         return $this;
     }
 
@@ -140,15 +153,23 @@ trait IssueRulesIssueSet
             throw new Exception("Found no 'cycle' or zero, it would cause infinite loop.");
         }
 
-        $this->date->modify('+' . $cycle . ' seconds');
-
         $starttime = static::_setTime($this->date->copy(), $this->getIssueSetting('starttime', '00:00:00'));
         $endtime   = static::_setTime($this->date->copy(), $this->getIssueSetting('endtime', '23:59:59'));
 
-        if (! $this->date->between($starttime, $endtime)) {
-            $this->activedIssueSetIndex++;
-            return $this->nextTime();
+        ($endtime <= $starttime) && $endtime->addDay();
+
+        $isFirst = $this->date->eq($starttime);
+        if ($isFirst && ($firstendtime = $this->getIssueSetting('firstendtime'))) {
+            $newdate = static::_setTime($this->date->copy(), $this->getIssueSetting('firstendtime', '00:00:00'));
+        } else {
+            $newdate = $this->date->copy()->modify('+' . $cycle . ' seconds');
         }
+
+        if (! $newdate->between($starttime, $endtime)) {
+            return $this->nextIssueSet()->nextTime();
+        }
+
+        $this->date = $newdate;
 
         return true;
     }
