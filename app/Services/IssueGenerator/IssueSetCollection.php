@@ -14,6 +14,19 @@ class IssueSetCollection extends Collection
     protected $activeIndex = 0;
 
     /**
+     * IssueSetCollection constructor.
+     * @param mixed $items
+     */
+    public function __construct($items = [])
+    {
+        parent::__construct($items);
+
+        $this->items = array_values(array_filter($this->items, function ($item) {
+            return $item instanceof IssueSet;
+        }));
+    }
+
+    /**
      * 从资料载入集合
      *
      * @param  array  $raw
@@ -32,7 +45,7 @@ class IssueSetCollection extends Collection
      */
     public function sortMe()
     {
-        return $this->sort(function ($left, $right) {
+        return $this->sort(function (IssueSet $left, IssueSet $right) {
             if ($left->get('sort') < $right->get('sort')) {
                 return -1;
             } elseif ($left->get('sort') > $right->get('sort')) {
@@ -49,7 +62,7 @@ class IssueSetCollection extends Collection
      */
     public function available()
     {
-        return $this->filter(function ($issueSet) {
+        return $this->filter(function (IssueSet $issueSet) {
             return $issueSet->isAvailable();
         })->values();
     }
