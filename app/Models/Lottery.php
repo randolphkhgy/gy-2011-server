@@ -44,28 +44,53 @@ class Lottery extends Model
 
     public $timestamps = false;
 
+    /**
+     * @param  object  $value
+     * @return mixed|object
+     */
     public function getIssuesetAttribute($value)
     {
         return ($value) ? unserialize($value) : (object) [];
     }
 
+    /**
+     * @param  \ArrayAccess|array|null  $value
+     */
     public function setIssuesetAttribute($value)
     {
         $this->attributes['issueset'] = Arr::accessible($value) ? serialize($value) : [];
     }
 
+    /**
+     * @param  object  $value
+     * @return mixed|object
+     */
     public function getNumberruleAttribute($value)
     {
         return ($value) ? unserialize($value) : (object) [];
     }
 
+    /**
+     * @param  \ArrayAccess|array|null  $value
+     */
     public function setNumberruleAttribute($value)
     {
         $this->attributes['numberrule'] = Arr::accessible($value) ? serialize($value) : [];
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function methods()
     {
         return $this->hasMany(Method::class, 'lotteryid', 'lotteryid');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function issueInfo()
+    {
+        return $this->hasMany(IssueInfo::class, 'lotteryid', 'lotteryid');
     }
 }
