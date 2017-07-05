@@ -38,7 +38,7 @@ trait IssueRulesIssueSet
     protected function setUpTime()
     {
         $active = $this->issueSet->active();
-        ($active) && $active->applyFirstTime($this->date);
+        ($active) && $active->applyFirstTime($this->dateTime->dateTime);
         return $this;
     }
 
@@ -90,9 +90,9 @@ trait IssueRulesIssueSet
             return false;
         }
 
-        $date = $this->issueSet->active()->nextCycle($this->date);
+        $date = $this->issueSet->active()->nextCycle($this->dateTime);
         if ($date) {
-            $this->date = $date;
+            $this->dateTime = $date;
             return true;
         } else {
             return $this->nextIssueSet()->nextTime();

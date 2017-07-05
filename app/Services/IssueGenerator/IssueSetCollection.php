@@ -70,7 +70,7 @@ class IssueSetCollection extends Collection
     /**
      * 取得启用的项目
      *
-     * @return \App\Services\IssueGenerator\IssueSet
+     * @return \App\Services\IssueGenerator\IssueSet|null
      */
     public function active()
     {
@@ -80,7 +80,7 @@ class IssueSetCollection extends Collection
     /**
      * 取得下一个启用的项目
      *
-     * @return \App\Services\IssueGenerator\IssueSet
+     * @return \App\Services\IssueGenerator\IssueSet|null
      */
     public function next()
     {
@@ -90,7 +90,7 @@ class IssueSetCollection extends Collection
     /**
      * 重设启用的项目
      *
-     * @return \App\Services\IssueGenerator\IssueSet
+     * @return \App\Services\IssueGenerator\IssueSet|null
      */
     public function reset()
     {

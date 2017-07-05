@@ -34,11 +34,11 @@ class IssueRules
     protected $number = 0;
 
     /**
-     * 日期时间
+     * 獎期时间
      *
-     * @var \Carbon\Carbon
+     * @var \App\Services\IssueGenerator\IssueDateTime
      */
-    protected $date;
+    protected $dateTime;
 
     /**
      * IssueRules constructor.
@@ -47,7 +47,7 @@ class IssueRules
      */
     public function __construct($issueRule, $issueSet = [])
     {
-        $this->date     = new Carbon;
+        $this->dateTime = IssueDateTime::today();
         $this->issueSet = $issueSet;
 
         $this->initRules($issueRule);
@@ -76,22 +76,22 @@ class IssueRules
     /**
      * 取得目前的日期时间
      *
-     * @return \Carbon\Carbon
+     * @return \App\Services\IssueGenerator\IssueDateTime
      */
     public function getDateTime()
     {
-        return $this->date;
+        return $this->dateTime;
     }
 
     /**
      * 设置日期时间
      *
-     * @param  \Carbon\Carbon  $date
+     * @param  \App\Services\IssueGenerator\IssueDateTime  $date
      * @return $this
      */
-    public function setDateTime(Carbon $date)
+    public function setDateTime(IssueDateTime $date)
     {
-        $this->date = $date;
+        $this->dateTime = $date;
         return $this;
     }
 
@@ -118,7 +118,7 @@ class IssueRules
      */
     protected function nextDay()
     {
-        $this->date->addDay()->startOfDay();
+        $this->dateTime = $this->dateTime->nextDay();
         // TODO 未完成函式
         return false;
     }
@@ -136,15 +136,17 @@ class IssueRules
     /**
      * 产生新期号
      *
-     * @return string|null
+     * @return array|null
      */
     public function newNumber()
     {
         if ($this->next()) {
-            $number = $this->replaceYMD($this->format, $this->date);
+            $number = $this->replaceYMD($this->format, $this->dateTime->dateTime);
             $number = $this->replaceNo($number, $this->number);
 
-            return $number;
+            $issueDateTimeInfo = $this->issueSet->active()->issueDateTimeInfo($this->dateTime);
+
+            return ['issue' => $number] + $issueDateTimeInfo;
         } elseif ($this->nextDay()) {
             return $this->newNumber();
         }

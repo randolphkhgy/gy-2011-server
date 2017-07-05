@@ -15,8 +15,8 @@ class IssueSet
      * @var array
      */
     protected static $properties = [
-        'starttime', 'endtime', 'firstendtime', 'cycle', 'inputcodetime',
-        'droptime', 'status', 'sort'
+        'starttime', 'endtime', 'firstendtime', 'cycle', 'endsale',
+        'inputcodetime', 'droptime', 'status', 'sort'
     ];
 
     /**
@@ -46,6 +46,11 @@ class IssueSet
      * @var int
      */
     protected $cycle;
+
+    /**
+     * @var int
+     */
+    protected $endsale;
 
     /**
      * @var int
@@ -140,25 +145,27 @@ class IssueSet
     /**
      * 下一次周期的时间.
      *
-     * @param  \Carbon\Carbon  $date
-     * @return \Carbon\Carbon
+     * @param  \App\Services\IssueGenerator\IssueDateTime  $dateTime
+     * @return \App\Services\IssueGenerator\IssueDateTime|null
      */
-    public function nextCycle(Carbon $date)
+    public function nextCycle(IssueDateTime $dateTime)
     {
-        $range        = $this->getRange($date);
-        $isFirstCycle = $date->eq($range['starttime']);
+        $range        = $this->getRange($dateTime->date);
+        $isFirstCycle = $dateTime->dateTime->eq($range['starttime']);
 
         if ($isFirstCycle) {
             // 第一次不使用周期，直接设定时间
-            $newDate  = $this->setTime($date->copy(), $this->firstendtime);
+            $newDate  = $this->setTime($dateTime->dateTime->copy(), $this->firstendtime);
         } else {
             // 第二次以后使用周期设定时间
-            $newDate  = $date->copy()->addSeconds($this->cycle);
+            $newDate  = $dateTime->dateTime->copy()->addSeconds($this->cycle);
         }
 
         // 是否在有效范围
         if ($newDate->between($range['starttime'], $range['endtime'])) {
-            return $newDate;
+            $newIssueDateTime = $dateTime->copy();
+            $newIssueDateTime->dateTime = $newDate;
+            return $newIssueDateTime;
         }
         return null;
     }
@@ -208,5 +215,32 @@ class IssueSet
     public function isAvailable()
     {
         return $this->status;
+    }
+
+    /**
+     * 奖期日期时间信息
+     *
+     * @param  \App\Services\IssueGenerator\IssueDateTime  $dateTime
+     * @return array
+     */
+    public function issueDateTimeInfo(IssueDateTime $dateTime)
+    {
+        $range = $this->getRange($dateTime->date);
+
+        $belongdate = $dateTime->date->format('Y-m-d');
+
+        // 销售开始时间
+        $salestart = $range['starttime']->copy()->subSeconds($this->endsale);
+
+        // 销售结束时间
+        $saleend = $dateTime->dateTime->copy()->subSeconds($this->endsale);
+
+        // 撤单时间
+        $canneldeadline = $dateTime->dateTime->copy()->subSeconds($this->droptime);
+
+        // 最早录号时间
+        $earliestwritetime = $dateTime->dateTime->copy()->addSeconds($this->inputcodetime);
+
+        return compact('belongdate', 'salestart', 'saleend', 'canneldeadline', 'earliestwritetime');
     }
 }

@@ -29,13 +29,14 @@ class IssueGeneratorService
 
         $issueRule = new IssueRules($lottery->issuerule, $lottery->issueset);
 
-        header('Content-Type: text/plain; charset=utf-8');
+//        header('Content-Type: text/plain; charset=utf-8');
         $n = 0;
         while ($issue = $issueRule->newNumber()) {
             if ($n++ > 300) {
                 break;
             }
-            echo $issueRule->getDateTime(), "\t", $issue, "\r\n";
+            dd($issue);
+            echo $issueRule->getDateTime(), "\t", $issue['issue'], "\r\n";
         }
         exit;
 
