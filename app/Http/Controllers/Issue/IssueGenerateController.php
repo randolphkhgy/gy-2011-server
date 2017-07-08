@@ -29,10 +29,8 @@ class IssueGenerateController extends Controller
 
         $numbers = $this->issueGenerator->generate($lotteryid);
 
-        dd($numbers);
-
         return response()->json([
-            'message' => 'test',
+            'count' => count($numbers),
         ]);
     }
 }
