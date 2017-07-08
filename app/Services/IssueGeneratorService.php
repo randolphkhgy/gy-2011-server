@@ -2,22 +2,28 @@
 
 namespace App\Services;
 
-use App\Services\IssueGenerator\IssueGeneratorServiceTime;
+use App\Models\IssueInfo;
 use App\Repositories\LotteryRepository;
-use App\Services\IssueGenerator\IssueRules;
 use App\Exceptions\LotteryNotFoundException;
+use GyTreasure\Issue\IssueGenerator\LegacyIssueRules\IssueGenerator;
 
 class IssueGeneratorService
 {
-    use IssueGeneratorServiceTime;
-
+    /**
+     * @var \App\Repositories\LotteryRepository
+     */
     protected $lotteryRepo;
 
-    public function __construct(LotteryRepository $lotteryRepo)
+    /**
+     * @var \App\Models\IssueInfo
+     */
+    protected $issueInfo;
+
+    public function __construct(LotteryRepository $lotteryRepo, IssueInfo $issueInfo)
     {
         $this->lotteryRepo = $lotteryRepo;
 
-        $this->initTime();
+        $this->issueInfo = $issueInfo;
     }
 
     public function generate($lotteryId)
@@ -27,18 +33,16 @@ class IssueGeneratorService
             throw new LotteryNotFoundException('Lottery is not found. (lotteryId=' . $lotteryId . ')');
         }
 
-        $issueRule = new IssueRules($lottery->issuerule, $lottery->issueset);
+        $generator = IssueGenerator::forge($lottery->issuerule, $lottery->issueset);
 
-//        header('Content-Type: text/plain; charset=utf-8');
-        $n = 0;
-        while ($issue = $issueRule->newNumber()) {
-            if ($n++ > 300) {
-                break;
-            }
-            dd($issue);
-            echo $issueRule->getDateTime(), "\t", $issue['issue'], "\r\n";
-        }
-        exit;
+        $returnArray = [];
+        $generator->run(function ($number) use ($lottery, $returnArray) {
+            $returnArray[] = $this->issueInfo->firstOrCreate([
+                'lotteryid' => $lottery->lotteryid,
+                'issue'     => $number['issue'],
+            ], array_except($number, ['issue']));
+        });
 
+        return $returnArray;
     }
 }

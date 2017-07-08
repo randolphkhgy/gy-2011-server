@@ -16,7 +16,7 @@ class CreateIssueinfoTable extends Migration
         Schema::create('issueinfo', function (Blueprint $table) {
             $table->increments('issueid');
             $table->unsignedTinyInteger('lotteryid');
-            $table->string('code');
+            $table->string('code')->default('');
             $table->string('issue', 20);
             $table->date('belongdate')->nullable();
             $table->dateTime('salestart');
@@ -33,7 +33,7 @@ class CreateIssueinfoTable extends Migration
             $table->unsignedTinyInteger('statusdeduct')->default(0);
             $table->unsignedTinyInteger('statususerpoint')->default(0);
             $table->unsignedTinyInteger('statuscheckbonus')->default(0);
-            $table->unsignedTinyInteger('statusbonus')->defaut(0);
+            $table->unsignedTinyInteger('statusbonus')->default(0);
             $table->unsignedTinyInteger('statustasktoproject')->default(0);
             $table->tinyInteger('statussynced')->default(0);
             $table->tinyInteger('statuslocks')->default(0);
