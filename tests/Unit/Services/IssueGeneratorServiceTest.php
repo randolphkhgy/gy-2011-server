@@ -3,7 +3,6 @@
 namespace Tests\Unit\Services;
 
 use App\Models\IssueInfo;
-use App\Models\Lottery;
 use App\Repositories\LotteryRepository;
 use App\Services\IssueGeneratorService;
 use Mockery;
@@ -15,11 +14,6 @@ class IssueGeneratorServiceTest extends TestCase
      * @var \Mockery\MockInterface|\App\Repositories\LotteryRepository
      */
     protected $lotteryRepoMock;
-
-    /**
-     * @var \Mockery\MockInterface|\App\Models\Lottery
-     */
-    protected $lotteryMock;
 
     /**
      * @var \Mockery\MockInterface|\App\Models\IssueInfo
@@ -36,17 +30,71 @@ class IssueGeneratorServiceTest extends TestCase
         parent::setUp();
 
         $this->lotteryRepoMock = Mockery::mock(LotteryRepository::class);
-        $this->lotteryMock     = Mockery::mock(Lottery::class);
         $this->issueInfoMock   = Mockery::mock(IssueInfo::class);
         $this->service         = new IssueGeneratorService($this->lotteryRepoMock, $this->issueInfoMock);
     }
 
+    protected function tearDown()
+    {
+        Mockery::close();
+        
+        parent::tearDown();
+    }
+
     public function testGenerate()
     {
-//        $lotteryId = 1;
-//
-//        $this->
-//
-//        $this->service->generate($lotteryId);
+        $lotteryid = 1;
+
+        $issuerule = 'Ymd-[n3]|0,1,0';
+        $issueset = [
+            [
+                'starttime' => '00:00:00',
+                'firstendtime' => '00:05:00',
+                'endtime' => '01:55:00',
+                'cycle' => 300,
+                'endsale' => 35,
+                'inputcodetime' => 30,
+                'droptime' => 35,
+                'status' => 1,
+                'sort' => 0,
+            ], [
+                'starttime' => '07:00:00',
+                'firstendtime' => '10:00:00',
+                'endtime' => '22:00:00',
+                'cycle' => 600,
+                'endsale' => 45,
+                'inputcodetime' => 20,
+                'droptime' => 45,
+                'status' => 1,
+                'sort' => 1,
+            ], [
+                'starttime' => '21:59:50',
+                'firstendtime' => '22:05:00',
+                'endtime' => '00:00:00',
+                'cycle' => 300,
+                'endsale' => 35,
+                'inputcodetime' => 30,
+                'droptime' => 35,
+                'status' => 1,
+                'sort' => 2,
+            ],
+        ];
+
+        $this->lotteryRepoMock
+            ->shouldReceive('find')
+            ->once()
+            ->with($lotteryid)
+            ->andReturn((object) compact('lotteryid', 'issuerule', 'issueset'));
+
+        $this->issueInfoMock
+            ->shouldReceive('firstOrCreate')
+            ->times(120)
+            ->andReturnUsing(function ($attributes, $values) {
+                return $attributes + $values;
+            });
+
+        // 只验证有多少资料，实际产生的资料验证已在 gy-treasure 有单元测试，不需重复撰写
+        $returnArray = $this->service->generate($lotteryid);
+        $this->assertEquals(120, count($returnArray));
     }
 }
