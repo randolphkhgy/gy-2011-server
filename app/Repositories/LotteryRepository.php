@@ -2,34 +2,15 @@
 
 namespace App\Repositories;
 
-use Illuminate\Support\Facades\Config;
+use App\Criteria\ShuziCriteria;
 use App\Models\Lottery;
+use Prettus\Repository\Eloquent\BaseRepository;
 
-class LotteryRepository extends ModelRepository
+class LotteryRepository extends BaseRepository
 {
-    /**
-     * LotteryRepository constrctor.
-     *
-     * @param \App\Models\Lottery $lottery
-     */
-    public function __construct(Lottery $lottery)
+    public function model()
     {
-        $this->model = $lottery;
-        $this->makeQuery();
-    }
-
-    /**
-     * 只撷取基本栏位
-     *
-     * @return $this
-     */
-    public function basicColumns()
-    {
-        $this->query->select([
-            'lotteryid',
-            'cnname'
-        ]);
-        return $this;
+        return Lottery::class;
     }
 
     /**
@@ -40,7 +21,7 @@ class LotteryRepository extends ModelRepository
      */
     public function includes($idArr = [])
     {
-         $this->query->orWhereIn('lotteryid', $idArr);
+         $this->model->orWhereIn('lotteryid', $idArr);
          return $this;
     }
 
@@ -51,16 +32,7 @@ class LotteryRepository extends ModelRepository
      */
     public function shuzi()
     {
-        $this->query
-            ->where(function ($query) {
-                // 取得可玩越南彩彩种
-                $inclusion = Config::get('lottery.shuzi.inclusion');
-
-                $this->query
-                    ->whereIn('lotteryid', $inclusion)
-                    ->orWhere('country', 1);
-            });
-
+        $this->pushCriteria(ShuziCriteria::class);
         return $this;
     }
 
@@ -72,7 +44,7 @@ class LotteryRepository extends ModelRepository
      */
     public function country($country, $inclusion = false)
     {
-        $this->query->where('country', $country);
+        $this->model = $this->model->where('country', $country);
         return $this;
     }
 
@@ -84,7 +56,7 @@ class LotteryRepository extends ModelRepository
      */
     public function type($type)
     {
-        $this->query->where('lotterytype', $type);
+        $this->model = $this->model->where('lotterytype', $type);
         return $this;
     }
 
@@ -95,7 +67,7 @@ class LotteryRepository extends ModelRepository
      */
     public function isMethodNotClosed()
     {
-        $this->query
+        $this->model = $this->model
             ->whereHas('methods', function ($query) {
                 $query->where('isclose', 0);
             });

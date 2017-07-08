@@ -22,19 +22,6 @@ class LotteryService
     }
 
     /**
-     * @return \App\Repositories\LotteryRepository
-     */
-    protected function newQuery($basicColumns = false)
-    {
-        $this->lotteryRepo->makeQuery();
-
-        // 撷取基本栏位与否
-        ($basicColumns) && $this->lotteryRepo->basicColumns();
-
-        return $this->lotteryRepo;
-    }
-
-    /**
      * 取得彩种
      *
      * @param  int  $lotteryid
@@ -42,7 +29,11 @@ class LotteryService
      */
     public function get($lotteryid, $basicColumns = false)
     {
-        return $this->newQuery($basicColumns)->find($lotteryid);
+        if ($basicColumns) {
+            return $this->lotteryRepo->find($lotteryid, static::basicColumns());
+        } else {
+            return $this->lotteryRepo->find($lotteryid);
+        }
     }
 
     /**
@@ -53,7 +44,11 @@ class LotteryService
      */
     public function allLotteries($basicColumns = false)
     {
-        return $this->newQuery($basicColumns)->all();
+        if ($basicColumns) {
+            return $this->lotteryRepo->all(static::basicColumns());
+        } else {
+            return $this->lotteryRepo->all();
+        }
     }
 
     /**
@@ -64,14 +59,13 @@ class LotteryService
      */
     public function allShuzi($basicColumns = false)
     {
-        // 新查询
-        $this->newQuery($basicColumns);
-
-        // 查询条件
         $this->lotteryRepo->shuzi()->type(0)->isMethodNotClosed();
 
-        // 输出彩种列表
-        return $this->lotteryRepo->all();
+        if ($basicColumns) {
+            return $this->lotteryRepo->all(static::basicColumns());
+        } else {
+            return $this->lotteryRepo->all();
+        }
     }
 
     /**
@@ -82,13 +76,25 @@ class LotteryService
      */
     public function allShuzivn($basicColumns = false)
     {
-        // 新查询
-        $this->newQuery($basicColumns);
-
-        // 查询条件
         $this->lotteryRepo->type(0)->isMethodNotClosed();
 
-        // 输出彩种列表
-        return $this->lotteryRepo->all();
+        if ($basicColumns) {
+            return $this->lotteryRepo->all(static::basicColumns());
+        } else {
+            return $this->lotteryRepo->all();
+        }
+    }
+
+    /**
+     * 只撷取基本栏位
+     *
+     * @return array
+     */
+    protected static function basicColumns()
+    {
+        return [
+            'lotteryid',
+            'cnname'
+        ];
     }
 }

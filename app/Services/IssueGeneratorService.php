@@ -28,20 +28,19 @@ class IssueGeneratorService
 
     public function generate($lotteryId)
     {
-        $lottery = $this->lotteryRepo->makeQuery()->find($lotteryId);
+        $lottery = $this->lotteryRepo->find($lotteryId);
         if (! $lottery) {
             throw new LotteryNotFoundException('Lottery is not found. (lotteryId=' . $lotteryId . ')');
         }
 
         $generator = IssueGenerator::forge($lottery->issuerule, $lottery->issueset);
 
-        $returnArray = [];
-        $generator->run(function ($number) use ($lottery, $returnArray) {
-            $returnArray[] = $this->issueInfo->firstOrCreate([
+        $returnArray = array_map(function ($number) use ($lottery) {
+            return $this->issueInfo->firstOrCreate([
                 'lotteryid' => $lottery->lotteryid,
                 'issue'     => $number['issue'],
             ], array_except($number, ['issue']));
-        });
+        }, $generator->getArray());
 
         return $returnArray;
     }
