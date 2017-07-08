@@ -7,7 +7,8 @@
     "require": {
         "php": ">=5.6.4",
         "laravel/framework": "5.4.*",
-        "laravel/tinker": "~1.0"
+        "laravel/tinker": "~1.0",
+        "randolph_kh_gy/gy-treasure": "@dev"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
@@ -47,5 +48,11 @@
         "preferred-install": "dist",
         "sort-packages": true,
         "optimize-autoloader": true
-    }
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "git@bitbucket.org:randolph_kh_gy/gy-treasure.git"
+        }
+    ]
 }
