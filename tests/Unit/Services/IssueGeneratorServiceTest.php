@@ -3,6 +3,7 @@
 namespace Tests\Unit\Services;
 
 use App\Models\IssueInfo;
+use App\Repositories\IssueInfoRepository;
 use App\Repositories\LotteryRepository;
 use App\Services\IssueGeneratorService;
 use Mockery;
@@ -21,6 +22,21 @@ class IssueGeneratorServiceTest extends TestCase
     protected $issueInfoMock;
 
     /**
+     * @var \Mockery\MockInterface|\App\Repositories\IssueInfoRepository
+     */
+    protected $issueInfoRepoMock;
+
+    /**
+     * @var \Mockery\MockInterface|\GyTreasure\Tasks\DrawDateTask
+     */
+    protected $drawDateTaskMock;
+
+    /**
+     * @var \Mockery\MockInterface|\App\GyTreasure\DrawDateTaskFactory
+     */
+    protected $drawDateTaskFactoryMock;
+
+    /**
      * @var \App\Services\IssueGeneratorService
      */
     protected $service;
@@ -29,9 +45,13 @@ class IssueGeneratorServiceTest extends TestCase
     {
         parent::setUp();
 
-        $this->lotteryRepoMock = Mockery::mock(LotteryRepository::class);
-        $this->issueInfoMock   = Mockery::mock(IssueInfo::class);
-        $this->service         = new IssueGeneratorService($this->lotteryRepoMock, $this->issueInfoMock);
+        $this->lotteryRepoMock          = Mockery::mock(LotteryRepository::class);
+        $this->issueInfoRepoMock        = Mockery::mock(IssueInfoRepository::class);
+        $this->issueInfoMock            = Mockery::mock(IssueInfo::class);
+        $this->service                  = new IssueGeneratorService(
+            $this->lotteryRepoMock,
+            $this->issueInfoRepoMock
+        );
     }
 
     protected function tearDown()
@@ -45,6 +65,36 @@ class IssueGeneratorServiceTest extends TestCase
     {
         $lotteryid = 1;
 
+        list($issuerule, $issueset, $count) = $this->_issueRules();
+
+        $this->lotteryRepoMock
+            ->shouldReceive('find')
+            ->once()
+            ->with($lotteryid)
+            ->andReturn((object) compact('lotteryid', 'issuerule', 'issueset'));
+
+        $this->issueInfoRepoMock
+            ->shouldReceive('firstOrNew')
+            ->times($count)
+            ->andReturn($this->issueInfoMock);
+
+        $this->issueInfoMock
+            ->shouldReceive('fill')
+            ->times($count)
+            ->andReturnSelf();
+
+        $this->issueInfoMock
+            ->shouldReceive('save')
+            ->times($count)
+            ->andReturnSelf();
+
+        // 只验证有多少资料，实际产生的资料验证已在 gy-treasure 有单元测试，不需重复撰写
+        $returnArray = $this->service->generate($lotteryid);
+        $this->assertEquals($count, count($returnArray));
+    }
+
+    protected function _issueRules()
+    {
         $issuerule = 'Ymd-[n3]|0,1,0';
         $issueset = [
             [
@@ -80,21 +130,8 @@ class IssueGeneratorServiceTest extends TestCase
             ],
         ];
 
-        $this->lotteryRepoMock
-            ->shouldReceive('find')
-            ->once()
-            ->with($lotteryid)
-            ->andReturn((object) compact('lotteryid', 'issuerule', 'issueset'));
+        $count = 120;
 
-        $this->issueInfoMock
-            ->shouldReceive('firstOrCreate')
-            ->times(120)
-            ->andReturnUsing(function ($attributes, $values) {
-                return $attributes + $values;
-            });
-
-        // 只验证有多少资料，实际产生的资料验证已在 gy-treasure 有单元测试，不需重复撰写
-        $returnArray = $this->service->generate($lotteryid);
-        $this->assertEquals(120, count($returnArray));
+        return [$issuerule, $issueset, $count];
     }
 }

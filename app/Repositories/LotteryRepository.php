@@ -8,6 +8,9 @@ use Prettus\Repository\Eloquent\BaseRepository;
 
 class LotteryRepository extends BaseRepository
 {
+    /**
+     * @return string
+     */
     public function model()
     {
         return Lottery::class;

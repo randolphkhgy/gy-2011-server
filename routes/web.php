@@ -21,3 +21,4 @@ Route::get('/lotteries/shuzivn', 'LotteryController@shuzivn');
 Route::get('/lottery/{id}', 'LotteryController@show');
 
 Route::post('/issue/generate', 'Issue\\IssueGenerateController@process');
+Route::post('/issue/drawdate', 'Issue\\IssueDrawerController@drawDate');
