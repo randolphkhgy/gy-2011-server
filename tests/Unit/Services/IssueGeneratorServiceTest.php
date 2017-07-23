@@ -6,6 +6,7 @@ use App\Models\IssueInfo;
 use App\Repositories\IssueInfoRepository;
 use App\Repositories\LotteryRepository;
 use App\Services\IssueGeneratorService;
+use Carbon\Carbon;
 use Mockery;
 use Tests\TestCase;
 
@@ -64,6 +65,7 @@ class IssueGeneratorServiceTest extends TestCase
     public function testGenerate()
     {
         $lotteryid = 1;
+        $date = Carbon::today();
 
         list($issuerule, $issueset, $count) = $this->_issueRules();
 
@@ -89,7 +91,7 @@ class IssueGeneratorServiceTest extends TestCase
             ->andReturnSelf();
 
         // 只验证有多少资料，实际产生的资料验证已在 gy-treasure 有单元测试，不需重复撰写
-        $returnArray = $this->service->generate($lotteryid);
+        $returnArray = $this->service->generate($lotteryid, $date);
         $this->assertEquals($count, count($returnArray));
     }
 

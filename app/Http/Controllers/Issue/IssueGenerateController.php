@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Issue;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Services\IssueGeneratorService;
@@ -23,11 +24,16 @@ class IssueGenerateController extends Controller
         $this->issueGenerator = $issueGenerator;
     }
 
+    /**
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function process(Request $request)
     {
         $lotteryid = (string) $request->input('lotteryid');
+        $date = Carbon::today();
 
-        $numbers = $this->issueGenerator->generate($lotteryid);
+        $numbers = $this->issueGenerator->generate($lotteryid, $date);
 
         return response()->json([
             'count' => count($numbers),

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\GyTreasure\CodeFormatter;
 use App\GyTreasure\DrawDateTaskFactory;
 use App\Repositories\IssueInfoRepository;
 use Carbon\Carbon;
@@ -50,7 +51,7 @@ class IssueDrawerService
     {
         $data = $this->drawNumbers($lotteryId, $date);
         foreach ($data as $row) {
-            $code = implode('', $row['winningNumbers']);
+            $code = CodeFormatter::format($lotteryId, $row['winningNumbers']);
             $this->issueInfoRepo->writeCode($lotteryId, $row['issue'], $code);
         }
 
@@ -66,16 +67,16 @@ class IssueDrawerService
      */
     protected function drawNumbers($lotteryId, Carbon $date)
     {
-        $issues = collect($this->generator->generate($lotteryId))
+        $issues = collect($this->generator->generate($lotteryId, $date))
             ->filter(function ($number) {
-                return $number['earliestwritetime']->isPast();
+                return ! $number['code'] && $number['earliestwritetime']->isPast();
             })
             ->pluck('issue')
             ->toArray();
 
         $drawDateTask = $this->drawDateTaskFactory->make($lotteryId);
 
-        if ($drawDateTask) {
+        if ($issues && $drawDateTask) {
 
             $draw = $drawDateTask->run($date, $issues);
 

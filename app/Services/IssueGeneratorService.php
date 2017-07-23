@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Repositories\IssueInfoRepository;
 use App\Repositories\LotteryRepository;
 use App\Exceptions\LotteryNotFoundException;
+use Carbon\Carbon;
 use GyTreasure\Issue\IssueGenerator\LegacyIssueRules\IssueGenerator;
 
 class IssueGeneratorService
@@ -34,11 +35,12 @@ class IssueGeneratorService
 
     /**
      * @param  int  $lotteryId
+     * @param  \Carbon\Carbon  $date
      * @return array
      *
      * @throws \App\Exceptions\LotteryNotFoundException
      */
-    public function generate($lotteryId)
+    public function generate($lotteryId, Carbon $date)
     {
         $lottery = $this->lotteryRepo->find($lotteryId);
         if (! $lottery) {
@@ -46,6 +48,7 @@ class IssueGeneratorService
         }
 
         $generator = IssueGenerator::forge($lottery->issuerule, $lottery->issueset);
+        $generator->setDateRange($date, $date);
 
         $returnArray = array_map(function ($number) use ($lottery) {
             $model = $this->issueInfoRepo->firstOrNew([

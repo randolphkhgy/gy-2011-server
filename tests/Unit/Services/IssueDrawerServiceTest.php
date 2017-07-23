@@ -87,7 +87,7 @@ class IssueDrawerServiceTest extends TestCase
         $this->generatorMock
             ->shouldReceive('generate')
             ->once()
-            ->with($lotteryid)
+            ->with($lotteryid, $date)
             ->andReturn($issues);
 
         $this->factoryMock
