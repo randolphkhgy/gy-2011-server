@@ -3,6 +3,7 @@
 namespace Tests\Unit\Services;
 
 use App\GyTreasure\DrawDateTaskFactory;
+use App\GyTreasure\DrawStartIssuesTaskFactory;
 use App\Repositories\IssueInfoRepository;
 use App\Services\IssueDrawerService;
 use App\Services\IssueGeneratorService;
@@ -29,6 +30,11 @@ class IssueDrawerServiceTest extends TestCase
     protected $factoryMock;
 
     /**
+     * @var \Mockery\MockInterface|\App\GyTreasure\DrawStartIssuesTaskFactory
+     */
+    protected $factory2Mock;
+
+    /**
      * @var \Mockery\MockInterface|\GyTreasure\Tasks\DrawDateTask
      */
     protected $taskMock;
@@ -45,11 +51,13 @@ class IssueDrawerServiceTest extends TestCase
         $this->issueInfoRep     = Mockery::mock(IssueInfoRepository::class);
         $this->generatorMock    = Mockery::mock(IssueGeneratorService::class);
         $this->factoryMock      = Mockery::mock(DrawDateTaskFactory::class);
+        $this->factory2Mock     = Mockery::mock(DrawStartIssuesTaskFactory::class);
         $this->taskMock         = Mockery::mock(DrawDateTask::class);
         $this->drawer           = new IssueDrawerService(
             $this->issueInfoRep,
             $this->generatorMock,
-            $this->factoryMock
+            $this->factoryMock,
+            $this->factory2Mock
         );
     }
 
@@ -69,10 +77,12 @@ class IssueDrawerServiceTest extends TestCase
             [
                 'issue' => '20170720-001',
                 'earliestwritetime' => new Carbon('2017-07-17 00:05:30'),
+                'code' => '',
             ],
             [
                 'issue' => '20170720-002',
                 'earliestwritetime' => new Carbon('2017-07-17 00:10:30'),
+                'code' => '',
             ],
         ];
 

@@ -2,11 +2,13 @@
 
 namespace App\Services;
 
+use App\Exceptions\LotteryStartNumberRequiredException;
 use App\Repositories\IssueInfoRepository;
 use App\Repositories\LotteryRepository;
 use App\Exceptions\LotteryNotFoundException;
 use Carbon\Carbon;
 use GyTreasure\Issue\IssueGenerator\LegacyIssueRules\IssueGenerator;
+use GyTreasure\Issue\IssueGenerator\LegacyIssueRules\IssueRules;
 
 class IssueGeneratorService
 {
@@ -36,18 +38,24 @@ class IssueGeneratorService
     /**
      * @param  int  $lotteryId
      * @param  \Carbon\Carbon  $date
+     * @param  int|null  $startNumber
      * @return array
      *
      * @throws \App\Exceptions\LotteryNotFoundException
+     * @throws \App\Exceptions\LotteryStartNumberRequiredException
      */
-    public function generate($lotteryId, Carbon $date)
+    public function generate($lotteryId, Carbon $date, $startNumber = null)
     {
         $lottery = $this->lotteryRepo->find($lotteryId);
         if (! $lottery) {
             throw new LotteryNotFoundException('Lottery is not found. (lotteryId=' . $lotteryId . ')');
         }
 
-        $generator = IssueGenerator::forge($lottery->issuerule, $lottery->issueset);
+        if ($startNumber === null) {
+            $startNumber = $this->startNumber($lottery);
+        }
+
+        $generator = IssueGenerator::forge($lottery->issuerule, $lottery->issueset, $startNumber);
         $generator->setDateRange($date, $date);
 
         $returnArray = array_map(function ($number) use ($lottery) {
@@ -61,5 +69,20 @@ class IssueGeneratorService
         }, $generator->getArray());
 
         return $returnArray;
+    }
+
+    /**
+     * @param  \App\Models\Lottery  $lottery
+     * @return int
+     * @throws \App\Exceptions\LotteryStartNumberRequiredException
+     */
+    protected function startNumber($lottery)
+    {
+        $rules = new IssueRules($lottery->issuerule);
+        if ($rules->isStartNumberNeeded()) {
+            throw new LotteryStartNumberRequiredException("'startNumber' is required for generating the issues.");
+        } else {
+            return 1;
+        }
     }
 }
