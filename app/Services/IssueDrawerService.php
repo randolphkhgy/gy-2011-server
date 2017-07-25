@@ -4,8 +4,7 @@ namespace App\Services;
 
 use App\Exceptions\LotteryStartNumberRequiredException;
 use App\GyTreasure\CodeFormatter;
-use App\GyTreasure\DrawDateTaskFactory;
-use App\GyTreasure\DrawStartIssuesTaskFactory;
+use App\GyTreasure\GyTreasureIdentity;
 use App\Repositories\IssueInfoRepository;
 use Carbon\Carbon;
 
@@ -32,22 +31,24 @@ class IssueDrawerService
     protected $drawStartIssuesTaskFactory;
 
     /**
+     * @var \App\Services\IssueDrawerFactory
+     */
+    protected $drawerFactory;
+
+    /**
      * IssueDrawerService constructor.
      * @param \App\Repositories\IssueInfoRepository $issueInfoRepo
      * @param \App\Services\IssueGeneratorService $generator
-     * @param \App\GyTreasure\DrawDateTaskFactory $drawDateTaskFactory
-     * @param \App\GyTreasure\DrawStartIssuesTaskFactory $drawStartIssuesTaskFactory
+     * @param \App\Services\IssueDrawerFactory $drawerFactory
      */
     public function __construct(
         IssueInfoRepository $issueInfoRepo,
         IssueGeneratorService $generator,
-        DrawDateTaskFactory $drawDateTaskFactory,
-        DrawStartIssuesTaskFactory $drawStartIssuesTaskFactory
+        IssueDrawerFactory $drawerFactory
     ) {
-        $this->issueInfoRepo        = $issueInfoRepo;
-        $this->generator            = $generator;
-        $this->drawDateTaskFactory  = $drawDateTaskFactory;
-        $this->drawStartIssuesTaskFactory   = $drawStartIssuesTaskFactory;
+        $this->issueInfoRepo = $issueInfoRepo;
+        $this->generator     = $generator;
+        $this->drawerFactory = $drawerFactory;
     }
 
     /**
@@ -66,6 +67,31 @@ class IssueDrawerService
         }
 
         return $data;
+    }
+
+    /**
+     * @return int
+     */
+    public function checkDrawing()
+    {
+        $drawer         = $this->drawerFactory->makeDrawer();
+        $limit          = 5;
+        $issueArray     = $this->issueInfoRepo->needsDrawing($limit)->all();
+        $count          = 0;
+
+        foreach ($issueArray as $row) {
+            $identity       = GyTreasureIdentity::getIdentity($row['lotteryid']);
+            $winningNumbers = $drawer->drawSingle($identity, $row['issue'], new Carbon($row['belongdate']));
+
+            if ($winningNumbers) {
+                $code = CodeFormatter::format($row['lotteryid'], $winningNumbers);
+                $this->issueInfoRepo->writeCode($row['lotteryid'], $row['issue'], $code);
+
+                $count++;
+            }
+        }
+
+        return $count;
     }
 
     /**
@@ -99,7 +125,7 @@ class IssueDrawerService
             ->pluck('issue')
             ->toArray();
 
-        $drawDateTask = $this->drawDateTaskFactory->make($lotteryId);
+        $drawDateTask = $this->drawerFactory->makeDrawDateTask($lotteryId);
 
         if ($issues && $drawDateTask) {
 
@@ -118,7 +144,7 @@ class IssueDrawerService
      */
     protected function drawStartIssuesTask($lotteryId, Carbon $date)
     {
-        $drawStartIssuesTask = $this->drawStartIssuesTaskFactory->make($lotteryId);
+        $drawStartIssuesTask = $this->drawerFactory->makeDrawStartIssuesTask($lotteryId);
 
         $data = $drawStartIssuesTask->run($date);
 

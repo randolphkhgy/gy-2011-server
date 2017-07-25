@@ -12,7 +12,7 @@ class DrawStartIssuesTaskFactory
      */
     public function make($lotteryId)
     {
-        $identity = config("gytreasure.identities.$lotteryId");
+        $identity = GyTreasureIdentity::getIdentity($lotteryId);
         return $identity ? DrawStartIssuesTask::forge($identity) : null;
     }
 }

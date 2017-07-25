@@ -12,7 +12,7 @@ class DrawDateTaskFactory
      */
     public function make($lotteryId)
     {
-        $identity = config("gytreasure.identities.$lotteryId");
+        $identity = GyTreasureIdentity::getIdentity($lotteryId);
         return $identity ? DrawDateTask::forge($identity) : null;
     }
 }

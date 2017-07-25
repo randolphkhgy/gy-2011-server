@@ -31,7 +31,7 @@ class IssueGenerateController extends Controller
     public function process(Request $request)
     {
         $lotteryid = (string) $request->input('lotteryid');
-        $date = Carbon::today();
+        $date      = new Carbon($request->input('date'));
 
         $numbers = $this->issueGenerator->generate($lotteryid, $date);
 

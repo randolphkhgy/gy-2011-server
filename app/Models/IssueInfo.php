@@ -8,6 +8,8 @@ class IssueInfo extends Model
 {
     protected $table = 'issueinfo';
 
+    protected $primaryKey = 'issueid';
+
     protected $fillable = [
         'lotteryid',
         'code',

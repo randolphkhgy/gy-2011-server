@@ -2,9 +2,8 @@
 
 namespace Tests\Unit\Services;
 
-use App\GyTreasure\DrawDateTaskFactory;
-use App\GyTreasure\DrawStartIssuesTaskFactory;
 use App\Repositories\IssueInfoRepository;
+use App\Services\IssueDrawerFactory;
 use App\Services\IssueDrawerService;
 use App\Services\IssueGeneratorService;
 use Carbon\Carbon;
@@ -25,14 +24,9 @@ class IssueDrawerServiceTest extends TestCase
     protected $generatorMock;
 
     /**
-     * @var \Mockery\MockInterface|\App\GyTreasure\DrawDateTaskFactory
+     * @var \Mockery\MockInterface|\App\Services\IssueDrawerFactory
      */
     protected $factoryMock;
-
-    /**
-     * @var \Mockery\MockInterface|\App\GyTreasure\DrawStartIssuesTaskFactory
-     */
-    protected $factory2Mock;
 
     /**
      * @var \Mockery\MockInterface|\GyTreasure\Tasks\DrawDateTask
@@ -50,14 +44,12 @@ class IssueDrawerServiceTest extends TestCase
 
         $this->issueInfoRep     = Mockery::mock(IssueInfoRepository::class);
         $this->generatorMock    = Mockery::mock(IssueGeneratorService::class);
-        $this->factoryMock      = Mockery::mock(DrawDateTaskFactory::class);
-        $this->factory2Mock     = Mockery::mock(DrawStartIssuesTaskFactory::class);
+        $this->factoryMock      = Mockery::mock(IssueDrawerFactory::class);
         $this->taskMock         = Mockery::mock(DrawDateTask::class);
         $this->drawer           = new IssueDrawerService(
             $this->issueInfoRep,
             $this->generatorMock,
-            $this->factoryMock,
-            $this->factory2Mock
+            $this->factoryMock
         );
     }
 
@@ -101,7 +93,7 @@ class IssueDrawerServiceTest extends TestCase
             ->andReturn($issues);
 
         $this->factoryMock
-            ->shouldReceive('make')
+            ->shouldReceive('makeDrawDateTask')
             ->once()
             ->with($lotteryid)
             ->andReturn($this->taskMock);

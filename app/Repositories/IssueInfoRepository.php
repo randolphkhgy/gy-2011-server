@@ -38,4 +38,22 @@ class IssueInfoRepository extends BaseRepository
 
         return $this;
     }
+
+    /**
+     * @param  int  $limit
+     * @return $this
+     */
+    public function needsDrawing($limit = 0)
+    {
+        $query = $this->model
+            ->where('statusfetch', 0)
+            ->where('earliestwritetime', '<=', Carbon::now())
+            ->where('code', '');
+
+        ($limit) && $query->limit($limit);
+
+        $this->model = $query;
+
+        return $this;
+    }
 }
