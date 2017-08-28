@@ -149,7 +149,7 @@ class IssueDrawerService
         $data = $drawStartIssuesTask->run($date);
 
         if ($data) {
-            $startNumber = $data['first'];
+            $startNumber = $this->generator->getNumberFromIssue($data['first'], $lotteryId);
 
             $this->generator->generate($lotteryId, $date, $startNumber);
 

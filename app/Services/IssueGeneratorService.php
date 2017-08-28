@@ -72,6 +72,24 @@ class IssueGeneratorService
     }
 
     /**
+     * 从期号分析流水号.
+     *
+     * @param  string  $issue
+     * @param  int     $lotteryId
+     * @return int|null
+     */
+    public function getNumberFromIssue($issue, $lotteryId)
+    {
+        $lottery = $this->lotteryRepo->find($lotteryId);
+        if (! $lottery) {
+            throw new LotteryNotFoundException('Lottery is not found. (lotteryId=' . $lotteryId . ')');
+        }
+
+        $rules = new IssueRules($lottery->issuerule);
+        return $rules->getNumberFromIssue($issue);
+    }
+
+    /**
      * @param  \App\Models\Lottery  $lottery
      * @return int
      * @throws \App\Exceptions\LotteryStartNumberRequiredException
