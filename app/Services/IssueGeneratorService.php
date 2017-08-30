@@ -58,17 +58,10 @@ class IssueGeneratorService
         $generator = IssueGenerator::forge($lottery->issuerule, $lottery->issueset, $startNumber);
         $generator->setDateRange($date, $date);
 
-        $returnArray = array_map(function ($number) use ($lottery) {
-            $model = $this->issueInfoRepo->firstOrNew([
-                'lotteryid' => $lottery->lotteryid,
-                'issue'     => $number['issue'],
-            ]);
-            $model->fill(array_except($number, ['issue']));
-            $model->save();
-            return $model;
-        }, $generator->getArray());
+        $data = $generator->getArray();
+        $this->issueInfoRepo->generateBatch($lottery->lotteryid, $data);
 
-        return $returnArray;
+        return $data;
     }
 
     /**

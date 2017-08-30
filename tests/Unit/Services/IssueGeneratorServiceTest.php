@@ -76,19 +76,10 @@ class IssueGeneratorServiceTest extends TestCase
             ->andReturn((object) compact('lotteryid', 'issuerule', 'issueset'));
 
         $this->issueInfoRepoMock
-            ->shouldReceive('firstOrNew')
-            ->times($count)
-            ->andReturn($this->issueInfoMock);
-
-        $this->issueInfoMock
-            ->shouldReceive('fill')
-            ->times($count)
-            ->andReturnSelf();
-
-        $this->issueInfoMock
-            ->shouldReceive('save')
-            ->times($count)
-            ->andReturnSelf();
+            ->shouldReceive('generateBatch')
+            ->once()
+            ->with($lotteryid, typeOf('array'))
+            ->andReturn(true);
 
         // 只验证有多少资料，实际产生的资料验证已在 gy-treasure 有单元测试，不需重复撰写
         $returnArray = $this->service->generate($lotteryid, $date);

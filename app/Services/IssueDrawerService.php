@@ -120,7 +120,7 @@ class IssueDrawerService
     {
         $issues = collect($this->generator->generate($lotteryId, $date))
             ->filter(function ($number) {
-                return ! $number['code'] && $number['earliestwritetime']->isPast();
+                return empty($number['code']) && $number['earliestwritetime']->isPast();
             })
             ->pluck('issue')
             ->toArray();
