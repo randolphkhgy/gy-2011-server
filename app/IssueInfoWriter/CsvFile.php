@@ -70,9 +70,9 @@ class CsvFile
     {
         $this->columns = array_merge(['lotteryid'], array_keys(head($array)));
 
-        array_walk($array, function ($number) use ($lotteryId) {
+        foreach ($array as $number) {
             fwrite($this->fileHandler, implode(',', array_merge([$lotteryId], array_values($number))) . PHP_EOL);
-        });
+        }
 
         $this->written = true;
 

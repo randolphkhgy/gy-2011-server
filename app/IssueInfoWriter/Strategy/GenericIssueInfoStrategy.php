@@ -12,7 +12,7 @@ class GenericIssueInfoStrategy extends IssueInfoWriterStrategy
     public function write($lotteryId, array $array = [])
     {
         foreach ($array as $row) {
-            $this->model->generate($lotteryId, $row['issue'], $row);
+            $this->model->create(['lotteryid' => $lotteryId] + $row);
         }
         return $this;
     }

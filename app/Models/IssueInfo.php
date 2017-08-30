@@ -63,30 +63,4 @@ class IssueInfo extends Model
     {
         return $this->belongsTo(Lottery::class, 'lotteryid', 'lotteryid');
     }
-
-    /**
-     * @param  int     $lotteryId
-     * @param  string  $issue
-     * @param  array   $attributes
-     * @return bool
-     */
-    public function generate($lotteryId, $issue, array $attributes = [])
-    {
-        return $this->getQuery()->updateOrInsert([
-            'lotteryid' => $lotteryId,
-            'issue'     => $issue,
-        ], $attributes);
-    }
-
-    /**
-     * @param  int    $lotteryId
-     * @param  array  $array
-     * @return bool
-     */
-    public function generateBatch($lotteryId, array $array)
-    {
-        $writer = app()->make(IssueInfoWriter::class);
-        $writer->write($lotteryId, $array);
-        return true;
-    }
 }

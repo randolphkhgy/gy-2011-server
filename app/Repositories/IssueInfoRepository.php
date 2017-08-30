@@ -25,7 +25,10 @@ class IssueInfoRepository extends BaseRepository
      */
     public function generate($lotteryId, $issue, array $attributes = [])
     {
-        return $this->model->generate($lotteryId, $issue, $attributes);
+        return $this->model->getQuery()->updateOrInsert([
+            'lotteryid' => $lotteryId,
+            'issue'     => $issue,
+        ], $attributes);
     }
 
     /**
@@ -35,7 +38,9 @@ class IssueInfoRepository extends BaseRepository
      */
     public function generateBatch($lotteryId, $array)
     {
-        return $this->model->generateBatch($lotteryId, $array);
+        $writer = app()->make(IssueInfoWriter::class);
+        $writer->write($lotteryId, $array);
+        return true;
     }
 
     /**
