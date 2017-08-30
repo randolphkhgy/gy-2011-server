@@ -48,12 +48,12 @@ class IssueInfoWriter
 
     /**
      * @param  int    $lotteryId
-     * @param  array  $attributes
+     * @param  array  $array
      * @return $this
      */
-    public function write($lotteryId, array $attributes = [])
+    public function write($lotteryId, array $array = [])
     {
-        $this->getStrategy()->write($lotteryId, $attributes);
+        $this->getStrategy()->write($lotteryId, $array);
 
         return $this;
     }
