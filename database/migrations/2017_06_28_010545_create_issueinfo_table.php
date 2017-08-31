@@ -45,10 +45,10 @@ class CreateIssueinfoTable extends Migration
             $table->dateTime('successtime2')->nullable();
             $table->unsignedTinyInteger('error')->default(0);
 
-            $table->unique(['lotteryid', 'issue'], 'lotteryid__issue');
-            $table->index(['lotteryid', 'salestart', 'saleend'], 'idx_lottery');
-            $table->index('saleend', 'idx_end');
-            $table->index(['belongdate', 'saleend', 'lotteryid', 'statuscode'], 'index_union');
+            $table->unique(['lotteryid', 'issue']);
+            $table->index(['lotteryid', 'salestart', 'saleend']);
+            $table->index('saleend');
+            $table->index(['belongdate', 'saleend', 'lotteryid', 'statuscode']);
         });
     }
 

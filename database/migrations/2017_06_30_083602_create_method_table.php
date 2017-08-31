@@ -41,8 +41,8 @@ class CreateMethodTable extends Migration
             $table->integer('source_id')->nullable();
             $table->boolean('isbroker')->default(0);
 
-            $table->index('lotteryid', 'idx_lottery');
-            $table->index('isclose', 'idx_close');
+            $table->index('lotteryid');
+            $table->index('isclose');
         });
     }
 

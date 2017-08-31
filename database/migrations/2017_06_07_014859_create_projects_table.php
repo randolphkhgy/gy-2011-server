@@ -52,10 +52,10 @@ class CreateProjectsTable extends Migration
             $table->tinyInteger('comefrom')->default(0);
             $table->string('issue_code_flow', 300)->nullable();
 
-            $table->index('userid', 'idx_user');
-            $table->index('taskid', 'idx_task');
-            $table->index(['lotteryid', 'methodid'], 'idx_method');
-            $table->index('issue', 'idx_issue');
+            $table->index('userid');
+            $table->index('taskid');
+            $table->index(['lotteryid', 'methodid']);
+            $table->index('issue');
         });
     }
 

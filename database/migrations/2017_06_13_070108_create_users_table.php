@@ -52,9 +52,9 @@ class CreateUsersTable extends Migration
             $table->datetime('lasterrtime')->nullable();
             $table->unsignedTinyInteger('user_lang')->default(1);
 
-            $table->unique('username', 'idx_uname');
-            $table->index(['userid', 'username'], 'idx_uid_uname');
-            $table->index(['username', 'loginpwd', 'securitypwd'], 'idx_user_login');
+            $table->unique('username');
+            $table->index(['userid', 'username']);
+            $table->index(['username', 'loginpwd', 'securitypwd']);
         });
     }
 

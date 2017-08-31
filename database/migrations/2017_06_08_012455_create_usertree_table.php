@@ -37,15 +37,15 @@ class CreateUsertreeTable extends Migration
             $table->integer('fxid')->nullable()->default(1);
             $table->boolean('isblockhistory')->nullable()->default(0);
 
-            $table->unique('username', 'idx_uname');
-            $table->index('usertype', 'idx_type');
-            $table->index('parentid', 'idx_pid');
-            $table->index('lvtopid', 'idx_topid');
-            $table->index('lvproxyid', 'idx_proxyid');
-            $table->index('isdeleted', 'idx_delected');
+            $table->unique('username');
+            $table->index('usertype');
+            $table->index('parentid');
+            $table->index('lvtopid');
+            $table->index('lvproxyid');
+            $table->index('isdeleted');
             // $table->index(['userid', 'parentid', 'parenttree']);
-            $table->index(['isfrozen', 'isdeleted'], 'idx_search');
-            $table->index('flag', 'idx_flag');
+            $table->index(['isfrozen', 'isdeleted']);
+            $table->index('flag');
         });
     }
 
