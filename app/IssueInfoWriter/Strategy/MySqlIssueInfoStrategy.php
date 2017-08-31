@@ -8,9 +8,13 @@ use Illuminate\Database\Connection;
 class MySqlIssueInfoStrategy extends IssueInfoWriterStrategy
 {
     /**
+     * 写入资料.
+     *
      * @param  int    $lotteryId
      * @param  array  $array
      * @return $this
+     *
+     * @throws \Exception
      */
     public function write($lotteryId, array $array = [])
     {
@@ -28,6 +32,8 @@ class MySqlIssueInfoStrategy extends IssueInfoWriterStrategy
     }
 
     /**
+     * 建立 SQL.
+     *
      * @param  \Illuminate\Database\Connection  $db
      * @param  string  $file
      * @param  array   $columns

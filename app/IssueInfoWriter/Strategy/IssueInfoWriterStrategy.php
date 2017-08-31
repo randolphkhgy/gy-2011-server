@@ -21,6 +21,8 @@ abstract class IssueInfoWriterStrategy
     }
 
     /**
+     * 写入资料.
+     *
      * @param  int    $lotteryId
      * @param  array  $array
      * @return $this

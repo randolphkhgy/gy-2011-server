@@ -31,6 +31,8 @@ class CsvFile
 
     /**
      * CsvFile constructor.
+     *
+     * @throws \Exception
      */
     public function __construct()
     {
@@ -90,6 +92,8 @@ class CsvFile
 
     /**
      * @return array|null
+     *
+     * @throws \Exception
      */
     protected function createNewFile()
     {
@@ -99,8 +103,9 @@ class CsvFile
             $this->fileHandler = fopen($this->file, 'w');
             $this->isOpened    = true;
             return compact('file', 'fileHandler');
+        } else {
+            throw new \Exception('Failed to create the csv file for writing issues to database.');
         }
-        return null;
     }
 
     /**

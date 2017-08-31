@@ -41,12 +41,13 @@ class IssueInfoWriter
                 break;
             default:
                 $this->setStrategy(new GenericIssueInfoStrategy($this->model));
-
         }
         return $this;
     }
 
     /**
+     * 写入资料.
+     *
      * @param  int    $lotteryId
      * @param  array  $array
      * @return $this
