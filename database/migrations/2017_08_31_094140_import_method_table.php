@@ -47,7 +47,7 @@ class ImportMethodTable extends Migration
      */
     protected function pgSql()
     {
-        return database_path('pg_migration_method_table.sql');
+        return database_path('pg_migration_method_table.data');
     }
 
     protected function mysqlImport($file)
@@ -63,6 +63,7 @@ class ImportMethodTable extends Migration
 
     protected function pgImport($file)
     {
-        DB::unprepared(file_get_contents($file));
+        DB::unprepared('COPY method FROM ' . DB::getPdo()->quote($file));
+        // DB::unprepared(file_get_contents($file));
     }
 }
