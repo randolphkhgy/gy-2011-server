@@ -35,13 +35,20 @@ class IssueInfoWriter
      */
     protected function initStrategy()
     {
-        switch ($this->model->getConnection()->getDriverName()) {
+        $conn = $this->model->getConnection();
+
+        switch ($conn->getDriverName()) {
             case 'mysql':
-                $this->setStrategy(new MySqlIssueInfoStrategy($this->model));
+                // 若 database.php 有设定 PDO::MYSQL_ATTR_LOCAL_INFILE 可以大幅提高插入期号速度
+                $mysqlAttrLocalInfile = $conn->getConfig('options.' . \PDO::MYSQL_ATTR_LOCAL_INFILE);
+                $strategy = ($mysqlAttrLocalInfile) ? MySqlIssueInfoStrategy::class : GenericIssueInfoStrategy::class;
                 break;
             default:
-                $this->setStrategy(new GenericIssueInfoStrategy($this->model));
+                $strategy = GenericIssueInfoStrategy::class;
         }
+
+        $this->setStrategy(new $strategy($this->model));
+        
         return $this;
     }
 
