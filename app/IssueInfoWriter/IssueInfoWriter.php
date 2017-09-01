@@ -5,6 +5,7 @@ namespace App\IssueInfoWriter;
 use App\IssueInfoWriter\Strategy\GenericIssueInfoStrategy;
 use App\IssueInfoWriter\Strategy\IssueInfoWriterStrategy;
 use App\IssueInfoWriter\Strategy\MySqlIssueInfoStrategy;
+use App\IssueInfoWriter\Strategy\PgSqlIssueInfoStrategy;
 use App\Models\IssueInfo;
 
 class IssueInfoWriter
@@ -39,29 +40,28 @@ class IssueInfoWriter
 
         switch ($conn->getDriverName()) {
             case 'mysql':
-                // 若 database.php 有设定 PDO::MYSQL_ATTR_LOCAL_INFILE 可以大幅提高插入期号速度
-                $mysqlAttrLocalInfile = $conn->getConfig('options.' . \PDO::MYSQL_ATTR_LOCAL_INFILE);
-                $strategy = ($mysqlAttrLocalInfile) ? MySqlIssueInfoStrategy::class : GenericIssueInfoStrategy::class;
+                $this->setStrategy(new MySqlIssueInfoStrategy($this->model));
+                break;
+            case 'pgsql':
+                $this->setStrategy(new PgSqlIssueInfoStrategy($this->model));
                 break;
             default:
-                $strategy = GenericIssueInfoStrategy::class;
+                $this->setStrategy(new GenericIssueInfoStrategy($this->model));
+                break;
         }
 
-        $this->setStrategy(new $strategy($this->model));
-        
         return $this;
     }
 
     /**
      * 写入资料.
      *
-     * @param  int    $lotteryId
      * @param  array  $array
      * @return $this
      */
-    public function write($lotteryId, array $array = [])
+    public function write(array $array = [])
     {
-        $this->getStrategy()->write($lotteryId, $array);
+        $this->getStrategy()->write($array);
 
         return $this;
     }

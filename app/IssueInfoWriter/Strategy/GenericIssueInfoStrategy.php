@@ -10,13 +10,12 @@ class GenericIssueInfoStrategy extends IssueInfoWriterStrategy
     /**
      * 写入资料.
      *
-     * @param  int    $lotteryId
      * @param  array  $array
      * @return $this
      */
-    public function write($lotteryId, array $array = [])
+    public function write(array $array = [])
     {
-        $data = $this->cleanExists($this->combineRows($lotteryId, $array));
+        $data = $this->data($array);
 
         $this->runInsert($data);
 
@@ -24,19 +23,12 @@ class GenericIssueInfoStrategy extends IssueInfoWriterStrategy
     }
 
     /**
-     * 合并栏位.
-     *
-     * @param  int    $lotteryId
      * @param  array  $array
      * @return array
      */
-    protected function combineRows($lotteryId, array $array = [])
+    protected function data(array $array = [])
     {
-        $baseArray = [static::FIELD_LOTTERY_ID => $lotteryId];
-
-        return array_map(function ($row) use ($baseArray) {
-            return $baseArray + $row;
-        }, $array);
+        return $this->cleanExists($array);
     }
 
     /**

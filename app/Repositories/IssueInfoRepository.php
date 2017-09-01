@@ -38,9 +38,26 @@ class IssueInfoRepository extends BaseRepository
      */
     public function generateBatch($lotteryId, $array)
     {
+        $data   = $this->combineIssues($lotteryId, $array);
         $writer = app()->make(IssueInfoWriter::class);
-        $writer->write($lotteryId, $array);
+        $writer->write($data);
         return true;
+    }
+
+    /**
+     * 合并奖期栏位.
+     *
+     * @param  int    $lotteryId
+     * @param  array  $array
+     * @return array
+     */
+    protected function combineIssues($lotteryId, array $array)
+    {
+        $baseArray = ['lotteryid' => $lotteryId];
+
+        return array_map(function ($row) use ($baseArray) {
+            return $baseArray + $row;
+        }, $array);
     }
 
     /**
