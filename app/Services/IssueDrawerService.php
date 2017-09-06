@@ -4,9 +4,11 @@ namespace App\Services;
 
 use App\Exceptions\LotteryStartNumberRequiredException;
 use App\GyTreasure\CodeFormatter;
+use App\GyTreasure\DrawingGeneratorFactory;
 use App\GyTreasure\GyTreasureIdentity;
 use App\Repositories\IssueInfoRepository;
 use Carbon\Carbon;
+use GyTreasure\Issue\DrawingGenerator\DrawingStrategyFactory;
 
 class IssueDrawerService
 {
@@ -52,6 +54,8 @@ class IssueDrawerService
     }
 
     /**
+     * 指定日期抓号.
+     *
      * @param  int  $lotteryId
      * @param  \Carbon\Carbon $date
      * @return array
@@ -95,6 +99,9 @@ class IssueDrawerService
     }
 
     /**
+     * 指定日期抓号.
+     * 不含写入.
+     * 
      * @param  int  $lotteryId
      * @param  \Carbon\Carbon $date
      * @return array
@@ -103,41 +110,61 @@ class IssueDrawerService
      */
     protected function drawNumbers($lotteryId, Carbon $date)
     {
-        try {
-            $data = $this->drawDateTask($lotteryId, $date);
-        } catch (LotteryStartNumberRequiredException $e) {
-            $data = $this->drawStartIssuesTask($lotteryId, $date);
+        if (DrawingGeneratorFactory::isAvailable($lotteryId)) {
+            // 自主彩抓号
+            $data = $this->selfDrawing($lotteryId, $date);
+        } else {
+            try {
+                // 官彩抓号
+                $data = $this->drawDateTask($lotteryId, $date);
+            } catch (LotteryStartNumberRequiredException $e) {
+                // 官彩抓号 (期号不是从 1 开始)
+                $data = $this->drawStartIssuesTask($lotteryId, $date);
+            }
         }
         return is_array($data) ? $data : [];
     }
 
     /**
+     * 自主彩抓号.
+     *
+     * @param  int  $lotteryId
+     * @param  \Carbon\Carbon  $date
+     * @return array
+     */
+    protected function selfDrawing($lotteryId, Carbon $date)
+    {
+        $issues      = $this->getIssuesNeededDrawing($lotteryId, $date);
+        $generator   = (new DrawingGeneratorFactory)->make($lotteryId);
+        $allNumbers  = $generator->generate(count($issues));
+
+        return array_map(function ($issue, $winningNumbers) {
+            return compact('winningNumbers', 'issue');
+        }, $issues, $allNumbers);
+    }
+
+    /**
+     * 官彩抓号主程序.
+     *
      * @param  int  $lotteryId
      * @param  \Carbon\Carbon  $date
      * @return array|null
      */
     protected function drawDateTask($lotteryId, Carbon $date)
     {
-        $issues = collect($this->generator->generate($lotteryId, $date))
-            ->filter(function ($number) {
-                return empty($number['code']) && $number['earliestwritetime']->isPast();
-            })
-            ->pluck('issue')
-            ->toArray();
-
+        $issues       = $this->getIssuesNeededDrawing($lotteryId, $date);
         $drawDateTask = $this->drawerFactory->makeDrawDateTask($lotteryId);
 
         if ($issues && $drawDateTask) {
-
             return $drawDateTask->run($date, $issues);
-
         } else {
-
             return null;
         }
     }
 
     /**
+     * 官彩抓号次要程序, 用于期号流水编号不以 1 开始.
+     *
      * @param  int  $lotteryId
      * @param  \Carbon\Carbon $date
      * @return array|null
@@ -156,5 +183,23 @@ class IssueDrawerService
             return $data['issues'];
         }
         return null;
+    }
+
+    /**
+     * 产生指定日期的所有期号, 并回传需要抓号的期号.
+     *
+     * @param  int  $lotteryId
+     * @param  \Carbon\Carbon  $date
+     * @return array
+     */
+    protected function getIssuesNeededDrawing($lotteryId, Carbon $date)
+    {
+        $issues = collect($this->generator->generate($lotteryId, $date))
+            ->filter(function ($number) {
+                return empty($number['code']) && $number['earliestwritetime']->isPast();
+            })
+            ->pluck('issue')
+            ->toArray();
+        return $issues;
     }
 }
