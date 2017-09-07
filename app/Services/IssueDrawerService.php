@@ -64,11 +64,16 @@ class IssueDrawerService
      */
     public function drawDate($lotteryId, Carbon $date)
     {
-        $data = $this->drawNumbers($lotteryId, $date);
-        foreach ($data as $row) {
-            $code = CodeFormatter::format($lotteryId, $row['winningNumbers']);
-            $this->issueInfoRepo->writeCode($lotteryId, $row['issue'], $code);
-        }
+        $data  = $this->drawNumbers($lotteryId, $date);
+        $array = array_map(function ($row) use ($lotteryId) {
+            return [
+                'lotteryid' => $lotteryId,
+                'issue'     => $row['issue'],
+                'code'      => CodeFormatter::format($lotteryId, $row['winningNumbers']),
+            ];
+        }, $data);
+
+        $this->issueInfoRepo->writeArray($array);
 
         return $data;
     }

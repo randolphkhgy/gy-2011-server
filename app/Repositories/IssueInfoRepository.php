@@ -68,18 +68,15 @@ class IssueInfoRepository extends BaseRepository
      */
     public function writeCode($lotteryId, $issue, $code)
     {
-        $this->model
-            ->where('lotteryid', $lotteryId)
-            ->where('issue', $issue)
-            ->where('statusfetch', 0)
-            ->update([
-                'code'          => $code,
-                'writetime'     => Carbon::now(),
-                'writeid'       => 255,
-                'statusfetch'   => 2,
-                'statuscode'    => 2,
-            ]);
+        $writer = new IssueInfoCodeWriter($this->model);
+        $writer->writeCode($lotteryId, $issue, $code);
+        return $this;
+    }
 
+    public function writeArray(array $array)
+    {
+        $writer = new IssueInfoCodeWriter($this->model);
+        $writer->writeArray($array);
         return $this;
     }
 
