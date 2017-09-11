@@ -73,6 +73,10 @@ class IssueInfoRepository extends BaseRepository
         return $this;
     }
 
+    /**
+     * @param  array  $array
+     * @return $this
+     */
     public function writeArray(array $array)
     {
         $writer = new IssueInfoCodeWriter($this->model);

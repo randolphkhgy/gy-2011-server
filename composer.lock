@@ -1380,7 +1380,7 @@
             "source": {
                 "type": "git",
                 "url": "git@bitbucket.org:randolph_kh_gy/gy-treasure.git",
-                "reference": "986300699a6f8cd19028ecba8ca5ced58fc08a01"
+                "reference": "41b072bf901bee318e13c3d7c4f3fcd73199a0ba"
             },
             "require": {
                 "guzzlehttp/guzzle": "~6",
@@ -1409,7 +1409,7 @@
                 }
             },
             "description": "基础彩种函式库.",
-            "time": "2017-09-06 07:09:26"
+            "time": "2017-09-11 06:39:40"
         },
         {
             "name": "swiftmailer/swiftmailer",

@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Services;
 
+use App\GyTreasure\CodeFormatter;
 use App\Repositories\IssueInfoRepository;
 use App\Services\IssueDrawerFactory;
 use App\Services\IssueDrawerService;
@@ -86,11 +87,25 @@ class IssueDrawerServiceTest extends TestCase
             'issue' => '20170720-002',
         ]];
 
+        $expects = [[
+            'issue' => '20170720-001',
+            'earliestwritetime' => new Carbon('2017-07-17 00:05:30'),
+            'code' => '36582',
+        ], [
+            'issue' => '20170720-002',
+            'earliestwritetime' => new Carbon('2017-07-17 00:10:30'),
+            'code' => '09123',
+        ]];
+
         $this->generatorMock
             ->shouldReceive('generate')
             ->once()
             ->with($lotteryid, $date)
-            ->andReturn($issues);
+            ->andReturnUsing(function () use ($issues) {
+                foreach ($issues as $row) {
+                    yield $row;
+                }
+            });
 
         $this->factoryMock
             ->shouldReceive('makeDrawDateTask')
@@ -104,15 +119,13 @@ class IssueDrawerServiceTest extends TestCase
             ->with($date, array_column($issues, 'issue'))
             ->andReturn($draws);
 
-        foreach ($draws as $row) {
-            $this->issueInfoRep
-                ->shouldReceive('writeCode')
-                ->once()
-                ->with($lotteryid, $row['issue'], implode($row['winningNumbers']))
-                ->andReturnSelf();
-        }
+        $this->generatorMock
+            ->shouldReceive('save')
+            ->once()
+            ->with($lotteryid, $expects)
+            ->andReturn($expects);
 
         $returnArray = $this->drawer->drawDate($lotteryid, $date);
-        $this->assertEquals($draws, $returnArray);
+        $this->assertEquals($expects, $returnArray);
     }
 }

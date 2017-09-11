@@ -64,18 +64,17 @@ class IssueDrawerService
      */
     public function drawDate($lotteryId, Carbon $date)
     {
-        $data  = $this->drawNumbers($lotteryId, $date);
-        $array = array_map(function ($row) use ($lotteryId) {
-            return [
-                'lotteryid' => $lotteryId,
-                'issue'     => $row['issue'],
-                'code'      => CodeFormatter::format($lotteryId, $row['winningNumbers']),
-            ];
-        }, $data);
+        $data  = $this->drawNumbers($lotteryId, $date, $issues);
+        $array = array_map(function ($draw, $issue) use ($lotteryId) {
 
-        $this->issueInfoRepo->writeArray($array);
+            if ($draw) {
+                $issue['code']      = CodeFormatter::format($lotteryId, $draw['winningNumbers']);
+            }
 
-        return $data;
+            return $issue;
+        }, $data, $issues);
+
+        return $this->generator->save($lotteryId, $array);
     }
 
     /**
@@ -109,22 +108,23 @@ class IssueDrawerService
      * 
      * @param  int  $lotteryId
      * @param  \Carbon\Carbon $date
+     * @param  array  $issues
      * @return array
      *
      * @throws \App\Exceptions\LotteryNotFoundException
      */
-    protected function drawNumbers($lotteryId, Carbon $date)
+    protected function drawNumbers($lotteryId, Carbon $date, &$issues = array())
     {
         if (DrawingGeneratorFactory::isAvailable($lotteryId)) {
             // 自主彩抓号
-            $data = $this->selfDrawing($lotteryId, $date);
+            $data = $this->selfDrawing($lotteryId, $date, $issues);
         } else {
             try {
                 // 官彩抓号
-                $data = $this->drawDateTask($lotteryId, $date);
+                $data = $this->drawDateTask($lotteryId, $date, $issues);
             } catch (LotteryStartNumberRequiredException $e) {
                 // 官彩抓号 (期号不是从 1 开始)
-                $data = $this->drawStartIssuesTask($lotteryId, $date);
+                $data = $this->drawStartIssuesTask($lotteryId, $date, $issues);
             }
         }
         return is_array($data) ? $data : [];
@@ -135,17 +135,19 @@ class IssueDrawerService
      *
      * @param  int  $lotteryId
      * @param  \Carbon\Carbon  $date
+     * @param  array  $issues
      * @return array
      */
-    protected function selfDrawing($lotteryId, Carbon $date)
+    protected function selfDrawing($lotteryId, Carbon $date, &$issues = array())
     {
-        $issues      = $this->getIssuesNeededDrawing($lotteryId, $date);
+        $issues      = iterator_to_array($this->generator->generate($lotteryId, $date));
+        $drawing     = $this->filterNeededDrawing($issues);
         $generator   = (new DrawingGeneratorFactory)->make($lotteryId);
-        $allNumbers  = $generator->generate(count($issues));
+        $allNumbers  = $generator->generate(count($drawing));
 
         return array_map(function ($issue, $winningNumbers) {
             return compact('winningNumbers', 'issue');
-        }, $issues, $allNumbers);
+        }, $drawing, $allNumbers);
     }
 
     /**
@@ -153,15 +155,17 @@ class IssueDrawerService
      *
      * @param  int  $lotteryId
      * @param  \Carbon\Carbon  $date
+     * @param  array  $issues
      * @return array|null
      */
-    protected function drawDateTask($lotteryId, Carbon $date)
+    protected function drawDateTask($lotteryId, Carbon $date, &$issues = array())
     {
-        $issues       = $this->getIssuesNeededDrawing($lotteryId, $date);
+        $issues       = iterator_to_array($this->generator->generate($lotteryId, $date));
+        $drawing      = $this->filterNeededDrawing($issues);
         $drawDateTask = $this->drawerFactory->makeDrawDateTask($lotteryId);
 
-        if ($issues && $drawDateTask) {
-            return $drawDateTask->run($date, $issues);
+        if ($drawing && $drawDateTask) {
+            return $drawDateTask->run($date, $drawing);
         } else {
             return null;
         }
@@ -172,9 +176,10 @@ class IssueDrawerService
      *
      * @param  int  $lotteryId
      * @param  \Carbon\Carbon $date
+     * @param  array  $issues
      * @return array|null
      */
-    protected function drawStartIssuesTask($lotteryId, Carbon $date)
+    protected function drawStartIssuesTask($lotteryId, Carbon $date, &$issues = array())
     {
         $drawStartIssuesTask = $this->drawerFactory->makeDrawStartIssuesTask($lotteryId);
 
@@ -183,7 +188,7 @@ class IssueDrawerService
         if ($data) {
             $startNumber = $this->generator->getNumberFromIssue($data['first'], $lotteryId);
 
-            $this->generator->generate($lotteryId, $date, $startNumber);
+            $issues = $this->generator->generate($lotteryId, $date, $startNumber);
 
             return $data['issues'];
         }
@@ -193,18 +198,13 @@ class IssueDrawerService
     /**
      * 产生指定日期的所有期号, 并回传需要抓号的期号.
      *
-     * @param  int  $lotteryId
-     * @param  \Carbon\Carbon  $date
+     * @param  array $array
      * @return array
      */
-    protected function getIssuesNeededDrawing($lotteryId, Carbon $date)
+    protected function filterNeededDrawing(array $array)
     {
-        $issues = collect($this->generator->generate($lotteryId, $date))
-            ->filter(function ($number) {
-                return empty($number['code']) && $number['earliestwritetime']->isPast();
-            })
-            ->pluck('issue')
-            ->toArray();
-        return $issues;
+        return array_column(array_filter($array, function ($number) {
+            return empty($number['code']) && $number['earliestwritetime']->isPast();
+        }), 'issue');
     }
 }

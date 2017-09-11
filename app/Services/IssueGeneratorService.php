@@ -36,10 +36,10 @@ class IssueGeneratorService
     }
 
     /**
-     * @param  int  $lotteryId
+     * @param  int             $lotteryId
      * @param  \Carbon\Carbon  $date
-     * @param  int|null  $startNumber
-     * @return array
+     * @param  int|null        $startNumber
+     * @return \Generator
      *
      * @throws \App\Exceptions\LotteryNotFoundException
      * @throws \App\Exceptions\LotteryStartNumberRequiredException
@@ -58,10 +58,33 @@ class IssueGeneratorService
         $generator = IssueGenerator::forge($lottery->issuerule, $lottery->issueset, $startNumber);
         $generator->setDateRange($date, $date);
 
-        $data = $generator->getArray();
-        $this->issueInfoRepo->generateBatch($lottery->lotteryid, $data);
+        return $generator->run();
+    }
 
+    /**
+     * @param  int  $lotteryId
+     * @param  \Generator|array  $data
+     * @return array
+     */
+    public function save($lotteryId, $data)
+    {
+        ($data instanceof \Traversable) && ($data = iterator_to_array($data));
+        $this->issueInfoRepo->generateBatch($lotteryId, $data);
         return $data;
+    }
+
+    /**
+     * @param  int             $lotteryId
+     * @param  \Carbon\Carbon  $date
+     * @param  int|null        $startNumber
+     * @return array
+     *
+     * @throws \App\Exceptions\LotteryNotFoundException
+     * @throws \App\Exceptions\LotteryStartNumberRequiredException
+     */
+    public function generateAndSave($lotteryId, Carbon $date, $startNumber = null)
+    {
+        return $this->save($lotteryId, $this->generate($lotteryId, $date, $startNumber));
     }
 
     /**

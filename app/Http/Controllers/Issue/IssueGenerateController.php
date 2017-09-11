@@ -33,7 +33,7 @@ class IssueGenerateController extends Controller
         $lotteryid = (string) $request->input('lotteryid');
         $date      = new Carbon($request->input('date'));
 
-        $numbers = $this->issueGenerator->generate($lotteryid, $date);
+        $numbers = $this->issueGenerator->generateAndSave($lotteryid, $date);
 
         return response()->json([
             'count' => count($numbers),
