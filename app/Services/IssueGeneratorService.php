@@ -3,11 +3,12 @@
 namespace App\Services;
 
 use App\Exceptions\LotteryStartNumberRequiredException;
+use App\GyTreasure\IssueGeneratorFactory;
 use App\Repositories\IssueInfoRepository;
 use App\Repositories\LotteryRepository;
 use App\Exceptions\LotteryNotFoundException;
 use Carbon\Carbon;
-use GyTreasure\Issue\IssueGenerator\LegacyIssueRules\IssueGenerator;
+use GyTreasure\Issue\GeneratorFactory;
 use GyTreasure\Issue\IssueGenerator\LegacyIssueRules\IssueRules;
 
 class IssueGeneratorService
@@ -55,7 +56,8 @@ class IssueGeneratorService
             $startNumber = $this->startNumber($lottery);
         }
 
-        $generator = IssueGenerator::forge($lottery->issuerule, $lottery->issueset, $startNumber);
+        $config    = ['issuerule' => $lottery->issuerule, 'issueset' => $lottery->issueset];
+        $generator = (new IssueGeneratorFactory)->make($lotteryId, $config, $startNumber);
         $generator->setDateRange($date, $date);
 
         return $generator->run();

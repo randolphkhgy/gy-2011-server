@@ -122,7 +122,6 @@ class IssueDrawerServiceTest extends TestCase
         $this->generatorMock
             ->shouldReceive('save')
             ->once()
-            ->with($lotteryid, $expects)
             ->andReturn($expects);
 
         $returnArray = $this->drawer->drawDate($lotteryid, $date);

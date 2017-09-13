@@ -68,7 +68,11 @@ class IssueDrawerService
         $array = array_map(function ($draw, $issue) use ($lotteryId) {
 
             if ($draw) {
-                $issue['code']      = CodeFormatter::format($lotteryId, $draw['winningNumbers']);
+                $issue['code']        = CodeFormatter::format($lotteryId, $draw['winningNumbers']);
+                $issue['writetime']   = Carbon::now();
+                $issue['writeid']     = 255;
+                $issue['statusfetch'] = 2;
+                $issue['statuscode']  = 2;
             }
 
             return $issue;
