@@ -80,4 +80,12 @@ class LotteryController extends Controller
             'data' => $data,
         ]);
     }
+
+    public function elevenfive()
+    {
+        $data = $this->lotterySer->allElevenFive(true);
+        return response()->json([
+            'data' => $data,
+        ]);
+    }
 }

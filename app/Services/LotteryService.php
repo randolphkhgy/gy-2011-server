@@ -86,6 +86,23 @@ class LotteryService
     }
 
     /**
+     * 11选5
+     *
+     * @param  bool  $basicColumns  是否只撷取基本栏位
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function allElevenFive($basicColumns = false)
+    {
+        $this->lotteryRepo->type(2)->isMethodNotClosed()->orderBy('sorts');
+
+        if ($basicColumns) {
+            return $this->lotteryRepo->all(static::basicColumns());
+        } else {
+            return $this->lotteryRepo->all();
+        }
+    }
+
+    /**
      * 只撷取基本栏位
      *
      * @return array
