@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "437044145a1db3740ac79a2c7cfb3580",
+    "content-hash": "0e9476e8ee069082376f44200a0da15f",
     "packages": [
         {
             "name": "dnoegel/php-xdg-base-dir",
@@ -1375,12 +1375,18 @@
             "time": "2017-08-04T13:39:04+00:00"
         },
         {
-            "name": "randolph_kh_gy/gy-treasure",
-            "version": "dev-master",
+            "name": "randolphkhgy/gy-treasure",
+            "version": "v0.1.0-alpha1",
             "source": {
                 "type": "git",
-                "url": "git@bitbucket.org:randolph_kh_gy/gy-treasure.git",
-                "reference": "c7d5412061677d9f634d3ab78a89bb7fcd06be1d"
+                "url": "https://github.com/randolphkhgy/gy-treasure.git",
+                "reference": "bbbb269abe556a2cbbd0966cf6d9fb218b1a0762"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/randolphkhgy/gy-treasure/zipball/bbbb269abe556a2cbbd0966cf6d9fb218b1a0762",
+                "reference": "bbbb269abe556a2cbbd0966cf6d9fb218b1a0762",
+                "shasum": ""
             },
             "require": {
                 "guzzlehttp/guzzle": "~6",
@@ -1403,13 +1409,9 @@
                     "GyTreasure\\": "src/"
                 }
             },
-            "autoload-dev": {
-                "psr-4": {
-                    "Tests\\": "tests/"
-                }
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "description": "基础彩种函式库.",
-            "time": "2017-09-13 07:50:48"
+            "time": "2017-09-15T07:30:49+00:00"
         },
         {
             "name": "swiftmailer/swiftmailer",
@@ -3788,7 +3790,7 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "randolph_kh_gy/gy-treasure": 20
+        "randolphkhgy/gy-treasure": 15
     },
     "prefer-stable": false,
     "prefer-lowest": false,
