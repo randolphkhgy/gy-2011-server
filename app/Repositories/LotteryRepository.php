@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Criteria\ShuziCriteria;
 use App\Models\Lottery;
+use Illuminate\Database\Eloquent\Builder;
 use Prettus\Repository\Eloquent\BaseRepository;
 
 class LotteryRepository extends BaseRepository
@@ -40,6 +41,17 @@ class LotteryRepository extends BaseRepository
     }
 
     /**
+     * 系统是否有 country 栏位.
+     *
+     * @return bool
+     */
+    public function countryColumnExists()
+    {
+        $model = ($this->model instanceof Builder) ? $this->model->getModel() : $this->model;
+        return $model->countryColumnExists();
+    }
+
+    /**
      * 撷取指定国家
      *
      * @param  int  $country
@@ -47,7 +59,9 @@ class LotteryRepository extends BaseRepository
      */
     public function country($country, $inclusion = false)
     {
-        $this->model = $this->model->where('country', $country);
+        if ($this->countryColumnExists()) {
+            $this->model = $this->model->where('country', $country);
+        }
         return $this;
     }
 

@@ -10,10 +10,19 @@ class Lottery extends Model
     const COUNTRY_CHINA = 1;
     const COUNTRY_VIETNAM = 3;
 
+    /**
+     * @var string
+     */
     protected $table = 'lottery';
 
+    /**
+     * @var string
+     */
     protected $primaryKey = 'lotteryid';
 
+    /**
+     * @var array
+     */
     protected $fillable = [
         'cnname',
         'enname',
@@ -42,6 +51,9 @@ class Lottery extends Model
         'country',
     ];
 
+    /**
+     * @var bool
+     */
     public $timestamps = false;
 
     /**
@@ -92,5 +104,13 @@ class Lottery extends Model
     public function issueInfo()
     {
         return $this->hasMany(IssueInfo::class, 'lotteryid', 'lotteryid');
+    }
+
+    /**
+     * @return bool
+     */
+    public function countryColumnExists()
+    {
+        return $this->getConnection()->getSchemaBuilder()->hasColumn($this->getTable(), 'country');
     }
 }

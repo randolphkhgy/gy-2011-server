@@ -22,15 +22,17 @@ class ShuziCriteria implements CriteriaInterface
      */
     public function apply($model, RepositoryInterface $repository)
     {
-        $model = $model
-            ->where(function ($query) {
-                // 取得可玩越南彩彩种
-                $inclusion = Config::get('lottery.shuzi.inclusion');
+        if ($repository->countryColumnExists()) {
+            $model = $model
+                ->where(function ($query) use ($repository) {
+                    // 取得可玩越南彩彩种
+                    $inclusion = Config::get('lottery.shuzi.inclusion');
 
-                $query
-                    ->whereIn('lotteryid', $inclusion)
-                    ->orWhere('country', 1);
-            });
+                    $query
+                        ->whereIn('lotteryid', $inclusion)
+                        ->orWhere('country', 1);
+                });
+        }
 
         return $model;
     }
