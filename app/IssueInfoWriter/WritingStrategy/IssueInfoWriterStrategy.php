@@ -1,6 +1,6 @@
 <?php
 
-namespace App\IssueInfoWriter\Strategy;
+namespace App\IssueInfoWriter\WritingStrategy;
 
 use App\Models\IssueInfo;
 

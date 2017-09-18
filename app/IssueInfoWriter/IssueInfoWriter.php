@@ -2,10 +2,10 @@
 
 namespace App\IssueInfoWriter;
 
-use App\IssueInfoWriter\Strategy\GenericIssueInfoStrategy;
-use App\IssueInfoWriter\Strategy\IssueInfoWriterStrategy;
-use App\IssueInfoWriter\Strategy\MySqlIssueInfoStrategy;
-use App\IssueInfoWriter\Strategy\PgSqlIssueInfoStrategy;
+use App\IssueInfoWriter\WritingStrategy\GenericIssueInfoStrategy;
+use App\IssueInfoWriter\WritingStrategy\IssueInfoWriterStrategy;
+use App\IssueInfoWriter\WritingStrategy\MySqlIssueInfoStrategy;
+use App\IssueInfoWriter\WritingStrategy\PgSqlIssueInfoStrategy;
 use App\Models\IssueInfo;
 
 class IssueInfoWriter
@@ -16,7 +16,7 @@ class IssueInfoWriter
     protected $model;
 
     /**
-     * @var \App\IssueInfoWriter\Strategy\IssueInfoWriterStrategy
+     * @var \App\IssueInfoWriter\WritingStrategy\IssueInfoWriterStrategy
      */
     protected $strategy;
 
@@ -67,7 +67,7 @@ class IssueInfoWriter
     }
 
     /**
-     * @return \App\IssueInfoWriter\Strategy\IssueInfoWriterStrategy
+     * @return \App\IssueInfoWriter\WritingStrategy\IssueInfoWriterStrategy
      */
     public function getStrategy()
     {
@@ -75,7 +75,7 @@ class IssueInfoWriter
     }
 
     /**
-     * @param  \App\IssueInfoWriter\Strategy\IssueInfoWriterStrategy  $strategy
+     * @param  \App\IssueInfoWriter\WritingStrategy\IssueInfoWriterStrategy  $strategy
      * @return $this
      */
     public function setStrategy(IssueInfoWriterStrategy $strategy)
