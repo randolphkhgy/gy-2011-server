@@ -1,8 +1,8 @@
 <?php
 
-namespace App\IssueInfoWriter\WritingStrategy;
+namespace App\IssueInfoWriter\MassInsertionStrategy;
 
-class GenericIssueInfoStrategy extends IssueInfoWriterStrategy
+class GenericIssueInfoStrategy extends MassInsertionStrategy
 {
     const FIELD_LOTTERY_ID = 'lotteryid';
     const FIELD_ISSUE      = 'issue';
@@ -39,8 +39,8 @@ class GenericIssueInfoStrategy extends IssueInfoWriterStrategy
      */
     protected function buildInsertPdoStatement(array $fields)
     {
-        $pdo = $this->model->getConnection()->getPdo();
-        return $pdo->prepare($this->buildInsertQuery($this->model->getTable(), $fields));
+        $pdo = $this->getConnection()->getPdo();
+        return $pdo->prepare($this->buildInsertQuery($this->getTable(), $fields));
     }
 
     /**
@@ -51,8 +51,8 @@ class GenericIssueInfoStrategy extends IssueInfoWriterStrategy
      */
     protected function buildExistPdoStatement(array $keys)
     {
-        $pdo = $this->model->getConnection()->getPdo();
-        return $pdo->prepare($this->buildExistQuery($this->model->getTable(), $keys));
+        $pdo = $this->getConnection()->getPdo();
+        return $pdo->prepare($this->buildExistQuery($this->getTable(), $keys));
     }
 
     /**

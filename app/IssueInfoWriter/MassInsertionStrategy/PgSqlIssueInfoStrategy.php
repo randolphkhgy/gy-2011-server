@@ -1,6 +1,6 @@
 <?php
 
-namespace App\IssueInfoWriter\WritingStrategy;
+namespace App\IssueInfoWriter\MassInsertionStrategy;
 
 use App\IssueInfoWriter\PgDataFile;
 use Illuminate\Database\Connection;
@@ -39,7 +39,7 @@ class PgSqlIssueInfoStrategy extends GenericIssueInfoStrategy
      */
     protected function writeFromFile(PgDataFile $pgData)
     {
-        $db    = $this->model->getConnection();
+        $db    = $this->getConnection();
         $query = $this->buildQuery($db, $pgData->file(), $pgData->columns());
         $db->unprepared($query);
         return $this;
@@ -55,7 +55,7 @@ class PgSqlIssueInfoStrategy extends GenericIssueInfoStrategy
      */
     protected function buildQuery(Connection $db, $file, array $columns)
     {
-        $copyClause = 'COPY ' . $this->model->getTable();
+        $copyClause = 'COPY ' . $this->getTable();
         $keyClause  = ' (' . implode(',', $columns). ')';
         $fromClause = ' FROM ' . $db->getPdo()->quote($file);
 

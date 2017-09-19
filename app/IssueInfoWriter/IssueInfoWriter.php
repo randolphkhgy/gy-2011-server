@@ -2,10 +2,13 @@
 
 namespace App\IssueInfoWriter;
 
-use App\IssueInfoWriter\WritingStrategy\GenericIssueInfoStrategy;
-use App\IssueInfoWriter\WritingStrategy\IssueInfoWriterStrategy;
-use App\IssueInfoWriter\WritingStrategy\MySqlIssueInfoStrategy;
-use App\IssueInfoWriter\WritingStrategy\PgSqlIssueInfoStrategy;
+use App\IssueInfoWriter\UpdatingStrategy\GenericIssueInfoUpdatingStrategy;
+use App\IssueInfoWriter\UpdatingStrategy\IssueInfoUpdatingStrategy;
+use App\IssueInfoWriter\MassInsertionStrategy\GenericIssueInfoStrategy;
+use App\IssueInfoWriter\MassInsertionStrategy\MassInsertionStrategy;
+use App\IssueInfoWriter\MassInsertionStrategy\MySqlIssueInfoStrategy;
+use App\IssueInfoWriter\MassInsertionStrategy\PgSqlIssueInfoStrategy;
+use App\IssueInfoWriter\UpdatingStrategy\MySqlUpdatingStrategy;
 use App\Models\IssueInfo;
 
 class IssueInfoWriter
@@ -16,9 +19,14 @@ class IssueInfoWriter
     protected $model;
 
     /**
-     * @var \App\IssueInfoWriter\WritingStrategy\IssueInfoWriterStrategy
+     * @var \App\IssueInfoWriter\MassInsertionStrategy\MassInsertionStrategy
      */
-    protected $strategy;
+    protected $massInsertionStrategy;
+
+    /**
+     * @var \App\IssueInfoWriter\UpdatingStrategy\IssueInfoUpdatingStrategy
+     */
+    protected $updatingStrategy;
 
     /**
      * IssueInfoWriter constructor.
@@ -28,25 +36,45 @@ class IssueInfoWriter
     {
         $this->model = $model;
 
-        $this->initStrategy();
+        $this->initMassInsertionStrategy()->initUpdatingStrategy();
     }
 
     /**
      * @return $this
      */
-    protected function initStrategy()
+    protected function initMassInsertionStrategy()
     {
-        $conn = $this->model->getConnection();
+        $conn  = $this->model->getConnection();
+        $table = $this->model->getTable();
 
         switch ($conn->getDriverName()) {
             case 'mysql':
-                $this->setStrategy(new MySqlIssueInfoStrategy($this->model));
+                $this->setMassInsertionStrategy(new MySqlIssueInfoStrategy($conn, $table));
                 break;
             case 'pgsql':
-                $this->setStrategy(new PgSqlIssueInfoStrategy($this->model));
+                $this->setMassInsertionStrategy(new PgSqlIssueInfoStrategy($conn, $table));
                 break;
             default:
-                $this->setStrategy(new GenericIssueInfoStrategy($this->model));
+                $this->setMassInsertionStrategy(new GenericIssueInfoStrategy($conn, $table));
+                break;
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    protected function initUpdatingStrategy()
+    {
+        $conn  = $this->model->getConnection();
+
+        switch ($conn->getDriverName()) {
+            case 'mysql':
+                $this->setUpdatingStrategy(new MySqlUpdatingStrategy($this->model));
+                break;
+            default:
+                $this->setUpdatingStrategy(new GenericIssueInfoUpdatingStrategy($this->model));
                 break;
         }
 
@@ -61,26 +89,49 @@ class IssueInfoWriter
      */
     public function write(array $array = [])
     {
-        $this->getStrategy()->write($array);
+        $conn     = $this->model->getConnection();
+        $tmpTable = TmpIssueInfoTable::generate($conn);
+
+        $this->getMassInsertionStrategy()->setTable($tmpTable->getTable())->write($array);
+
+        $this->getUpdatingStrategy()->write($tmpTable);
 
         return $this;
     }
 
     /**
-     * @return \App\IssueInfoWriter\WritingStrategy\IssueInfoWriterStrategy
+     * @return \App\IssueInfoWriter\MassInsertionStrategy\MassInsertionStrategy
      */
-    public function getStrategy()
+    public function getMassInsertionStrategy()
     {
-        return $this->strategy;
+        return $this->massInsertionStrategy;
     }
 
     /**
-     * @param  \App\IssueInfoWriter\WritingStrategy\IssueInfoWriterStrategy  $strategy
+     * @param  \App\IssueInfoWriter\MassInsertionStrategy\MassInsertionStrategy  $strategy
      * @return $this
      */
-    public function setStrategy(IssueInfoWriterStrategy $strategy)
+    public function setMassInsertionStrategy(MassInsertionStrategy $strategy)
     {
-        $this->strategy = $strategy;
+        $this->massInsertionStrategy = $strategy;
+        return $this;
+    }
+
+    /**
+     * @return \App\IssueInfoWriter\UpdatingStrategy\IssueInfoUpdatingStrategy
+     */
+    public function getUpdatingStrategy()
+    {
+        return $this->updatingStrategy;
+    }
+
+    /**
+     * @param  \App\IssueInfoWriter\UpdatingStrategy\IssueInfoUpdatingStrategy  $strategy
+     * @return $this
+     */
+    public function setUpdatingStrategy(IssueInfoUpdatingStrategy $strategy)
+    {
+        $this->updatingStrategy = $strategy;
         return $this;
     }
 }

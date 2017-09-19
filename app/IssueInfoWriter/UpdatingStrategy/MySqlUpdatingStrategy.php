@@ -5,7 +5,7 @@ namespace App\IssueInfoWriter\UpdatingStrategy;
 use App\IssueInfoWriter\TmpIssueInfoTable;
 use App\Models\IssueInfo;
 
-class GenericIssueInfoUpdatingStrategy extends IssueInfoUpdatingStrategy
+class MySqlUpdatingStrategy extends IssueInfoUpdatingStrategy
 {
     /**
      * @var \App\Models\IssueInfo

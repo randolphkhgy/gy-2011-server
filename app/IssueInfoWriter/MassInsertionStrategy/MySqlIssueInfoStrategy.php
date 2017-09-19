@@ -1,6 +1,6 @@
 <?php
 
-namespace App\IssueInfoWriter\WritingStrategy;
+namespace App\IssueInfoWriter\MassInsertionStrategy;
 
 use App\IssueInfoWriter\CsvFile;
 use Illuminate\Database\Connection;
@@ -35,11 +35,11 @@ class MySqlIssueInfoStrategy extends GenericIssueInfoStrategy
     protected function isLocalInfileAllowed()
     {
         // PDO 需要启用 MYSQL_ATTR_LOCAL_INFILE 的选项
-        $configLocalInfile = $this->model->getConnection()->getConfig('options.' . \PDO::MYSQL_ATTR_LOCAL_INFILE);
+        $configLocalInfile = $this->getConnection()->getConfig('options.' . \PDO::MYSQL_ATTR_LOCAL_INFILE);
 
         // MySQL 的设定需要 local_infile 为 ON
         $GlobalVariable    = array_get(
-            $this->model->getConnection()->getPdo()
+            $this->getConnection()->getPdo()
                 ->query('SHOW GLOBAL VARIABLES LIKE \'local_infile\'')
                 ->fetch(\PDO::FETCH_ASSOC),
             'Value',
@@ -81,7 +81,7 @@ class MySqlIssueInfoStrategy extends GenericIssueInfoStrategy
      */
     protected function writeFromFile(CsvFile $csv)
     {
-        $db    = $this->model->getConnection();
+        $db    = $this->getConnection();
         $query = $this->buildQuery($db, $csv->file(), $csv->columns());
         $db->unprepared($query);
         return $this;
@@ -108,7 +108,7 @@ class MySqlIssueInfoStrategy extends GenericIssueInfoStrategy
     protected function buildQuery(Connection $db, $file, array $columns)
     {
         $loadDataClause        = 'LOAD DATA LOCAL INFILE ' . $db->getPdo()->quote($file);
-        $insertClause          = ' IGNORE INTO TABLE ' . $this->model->getTable();
+        $insertClause          = ' IGNORE INTO TABLE ' . $this->getTable();
         $enclosedClause        = ' FIELDS TERMINATED BY \',\'';
         $linesTerminatedClause = ' LINES TERMINATED BY ' . $db->getPdo()->quote(PHP_EOL);
         $columnsClause         = ' (' . implode(',', $columns) . ')';
