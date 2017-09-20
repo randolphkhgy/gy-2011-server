@@ -4,7 +4,7 @@ namespace App\IssueInfoWriter\UpdatingStrategy;
 
 use App\IssueInfoWriter\TmpIssueInfoTable;
 
-class MySqlUpdatingStrategy extends IssueInfoUpdatingStrategy
+class PgSqlUpdatingStrategy extends IssueInfoUpdatingStrategy
 {
     /**
      * @param  \App\IssueInfoWriter\TmpIssueInfoTable  $tmpTable
@@ -26,12 +26,13 @@ class MySqlUpdatingStrategy extends IssueInfoUpdatingStrategy
         $table = $this->getTable();
         $conn  = $this->getConnection();
 
-        $insertClause  = 'INSERT IGNORE INTO ' . $table;
-        $columnsClause = ' (' . implode(',', $tmpTable->getColumnsWithoutPK()) . ')';
-        $selectClause  = ' SELECT ' . implode(',', $tmpTable->getColumnsWithoutPK());
-        $fromClause    = ' FROM ' . $tmpTable->getTable();
+        $insertClause   = 'INSERT INTO ' . $table;
+        $columnsClause  = ' (' . implode(',', $tmpTable->getColumnsWithoutPK()) . ')';
+        $selectClause   = ' SELECT ' . implode(',', $tmpTable->getColumnsWithoutPK());
+        $fromClause     = ' FROM ' . $tmpTable->getTable();
+        $conflictClause = ' ON CONFLICT DO NOTHING';
 
-        $sql = $insertClause . $columnsClause . $selectClause . $fromClause;
+        $sql = $insertClause . $columnsClause . $selectClause . $fromClause . $conflictClause;
 
         $conn->unprepared($sql);
 
@@ -48,20 +49,26 @@ class MySqlUpdatingStrategy extends IssueInfoUpdatingStrategy
         $conn  = $this->getConnection();
 
         $updates = [
-            'issue.code = tmp.code',
-            'issue.writetime = tmp.writetime',
-            'issue.writeid = tmp.writeid',
-            'issue.statusfetch = tmp.statusfetch',
-            'issue.statuscode = tmp.statuscode',
+            'code = tmp.code',
+            'writetime = tmp.writetime',
+            'writeid = tmp.writeid',
+            'statusfetch = tmp.statusfetch',
+            'statuscode = tmp.statuscode',
+        ];
+
+        $where = [
+            'issue.lotteryid = tmp.lotteryid',
+            'issue.issue = tmp.issue',
+            'issue.statusfetch = 0',
+            'tmp.statusfetch <> 0',
         ];
 
         $updateClause = 'UPDATE ' . $table . ' AS issue';
-        $join1Clause  = ' INNER JOIN ' . $tmpTable->getTable() . ' AS tmp';
-        $on1Clause    = ' ON issue.lotteryid = tmp.lotteryid AND issue.issue = tmp.issue';
         $setClause    = ' SET ' . implode(',', $updates);
-        $whereClause  = ' WHERE issue.statusfetch = 0 AND tmp.statusfetch <> 0';
+        $fromClause   = ' FROM ' . $tmpTable->getTable() . ' AS tmp';
+        $whereClause  = ' WHERE ' . implode(' AND ', $where);
 
-        $sql = $updateClause . $join1Clause . $on1Clause . $setClause . $whereClause;
+        $sql = $updateClause . $setClause . $fromClause . $whereClause;
 
         $conn->unprepared($sql);
 

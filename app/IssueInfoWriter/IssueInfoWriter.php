@@ -2,13 +2,10 @@
 
 namespace App\IssueInfoWriter;
 
-use App\IssueInfoWriter\UpdatingStrategy\GenericIssueInfoUpdatingStrategy;
-use App\IssueInfoWriter\UpdatingStrategy\IssueInfoUpdatingStrategy;
-use App\IssueInfoWriter\MassInsertionStrategy\GenericIssueInfoStrategy;
-use App\IssueInfoWriter\MassInsertionStrategy\MassInsertionStrategy;
-use App\IssueInfoWriter\MassInsertionStrategy\MySqlIssueInfoStrategy;
-use App\IssueInfoWriter\MassInsertionStrategy\PgSqlIssueInfoStrategy;
-use App\IssueInfoWriter\UpdatingStrategy\MySqlUpdatingStrategy;
+use App\IssueInfoWriter\StrategyCommander\GenericIssueInfoWriterCommander;
+use App\IssueInfoWriter\StrategyCommander\IssueInfoWriterCommander;
+use App\IssueInfoWriter\StrategyCommander\MySqlIssueInfoWriterCommander;
+use App\IssueInfoWriter\StrategyCommander\PgSqlIssueInfoWriterCommander;
 use App\Models\IssueInfo;
 
 class IssueInfoWriter
@@ -17,6 +14,11 @@ class IssueInfoWriter
      * @var \App\Models\IssueInfo
      */
     protected $model;
+
+    /**
+     * @var \App\IssueInfoWriter\StrategyCommander\IssueInfoWriterCommander
+     */
+    protected $commander;
 
     /**
      * @var \App\IssueInfoWriter\MassInsertionStrategy\MassInsertionStrategy
@@ -36,48 +38,28 @@ class IssueInfoWriter
     {
         $this->model = $model;
 
-        $this->initMassInsertionStrategy()->initUpdatingStrategy();
+        $this->initStrategyCommander();
     }
 
     /**
      * @return $this
      */
-    protected function initMassInsertionStrategy()
+    protected function initStrategyCommander()
     {
         $conn  = $this->model->getConnection();
         $table = $this->model->getTable();
 
         switch ($conn->getDriverName()) {
             case 'mysql':
-                $this->setMassInsertionStrategy(new MySqlIssueInfoStrategy($conn, $table));
+                $this->setCommander(new MySqlIssueInfoWriterCommander($conn, $table));
                 break;
             case 'pgsql':
-                $this->setMassInsertionStrategy(new PgSqlIssueInfoStrategy($conn, $table));
+                $this->setCommander(new PgSqlIssueInfoWriterCommander($conn, $table));
                 break;
             default:
-                $this->setMassInsertionStrategy(new GenericIssueInfoStrategy($conn, $table));
+                $this->setCommander(new GenericIssueInfoWriterCommander($conn, $table));
                 break;
         }
-
-        return $this;
-    }
-
-    /**
-     * @return $this
-     */
-    protected function initUpdatingStrategy()
-    {
-        $conn  = $this->model->getConnection();
-
-        switch ($conn->getDriverName()) {
-            case 'mysql':
-                $this->setUpdatingStrategy(new MySqlUpdatingStrategy($this->model));
-                break;
-            default:
-                $this->setUpdatingStrategy(new GenericIssueInfoUpdatingStrategy($this->model));
-                break;
-        }
-
         return $this;
     }
 
@@ -89,49 +71,25 @@ class IssueInfoWriter
      */
     public function write(array $array = [])
     {
-        $conn     = $this->model->getConnection();
-        $tmpTable = TmpIssueInfoTable::generate($conn);
-
-        $this->getMassInsertionStrategy()->setTable($tmpTable->getTable())->write($array);
-
-        $this->getUpdatingStrategy()->write($tmpTable);
-
+        $this->getCommander()->write($array);
         return $this;
     }
 
     /**
-     * @return \App\IssueInfoWriter\MassInsertionStrategy\MassInsertionStrategy
+     * @return \App\IssueInfoWriter\StrategyCommander\IssueInfoWriterCommander
      */
-    public function getMassInsertionStrategy()
+    public function getCommander()
     {
-        return $this->massInsertionStrategy;
+        return $this->commander;
     }
 
     /**
-     * @param  \App\IssueInfoWriter\MassInsertionStrategy\MassInsertionStrategy  $strategy
+     * @param  \App\IssueInfoWriter\StrategyCommander\IssueInfoWriterCommander  $commander
      * @return $this
      */
-    public function setMassInsertionStrategy(MassInsertionStrategy $strategy)
+    public function setCommander(IssueInfoWriterCommander $commander)
     {
-        $this->massInsertionStrategy = $strategy;
-        return $this;
-    }
-
-    /**
-     * @return \App\IssueInfoWriter\UpdatingStrategy\IssueInfoUpdatingStrategy
-     */
-    public function getUpdatingStrategy()
-    {
-        return $this->updatingStrategy;
-    }
-
-    /**
-     * @param  \App\IssueInfoWriter\UpdatingStrategy\IssueInfoUpdatingStrategy  $strategy
-     * @return $this
-     */
-    public function setUpdatingStrategy(IssueInfoUpdatingStrategy $strategy)
-    {
-        $this->updatingStrategy = $strategy;
+        $this->commander = $commander;
         return $this;
     }
 }

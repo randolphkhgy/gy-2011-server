@@ -28,7 +28,7 @@ class PgDataFile extends TmpFile
     {
         switch (gettype($value)) {
             case 'NULL':
-                return 'NULL';
+                return '\N';
             case 'integer':
                 return $value;
             case 'double':

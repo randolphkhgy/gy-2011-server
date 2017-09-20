@@ -1,11 +1,10 @@
 <?php
 
-namespace App\IssueInfoWriter\UpdatingStrategy;
+namespace App\IssueInfoWriter\StrategyCommander;
 
-use App\IssueInfoWriter\TmpIssueInfoTable;
 use Illuminate\Database\Connection;
 
-abstract class IssueInfoUpdatingStrategy
+abstract class IssueInfoWriterCommander
 {
     /**
      * @var \Illuminate\Database\Connection
@@ -18,9 +17,9 @@ abstract class IssueInfoUpdatingStrategy
     protected $table;
 
     /**
-     * IssueInfoUpdatingStrategy constructor.
+     * IssueInfoWriterCommander constructor.
      * @param \Illuminate\Database\Connection $connection
-     * @param string $table
+     * @param $table
      */
     public function __construct(Connection $connection, $table)
     {
@@ -55,8 +54,10 @@ abstract class IssueInfoUpdatingStrategy
     }
 
     /**
-     * @param  \App\IssueInfoWriter\TmpIssueInfoTable  $tmpTable
+     * 写入资料.
+     *
+     * @param  array  $array
      * @return $this
      */
-    abstract public function write(TmpIssueInfoTable $tmpTable);
+    abstract public function write(array $array = []);
 }

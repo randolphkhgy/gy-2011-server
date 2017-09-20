@@ -2,8 +2,13 @@
 
 namespace App\IssueInfoWriter\MassInsertionStrategy;
 
+use App\IssueInfoWriter\QueryTrait\CountRowsStatementQuery;
+use App\IssueInfoWriter\QueryTrait\InsertRowsStatementQuery;
+
 class GenericIssueInfoStrategy extends MassInsertionStrategy
 {
+    use CountRowsStatementQuery, InsertRowsStatementQuery;
+
     const FIELD_LOTTERY_ID = 'lotteryid';
     const FIELD_ISSUE      = 'issue';
 
@@ -32,65 +37,6 @@ class GenericIssueInfoStrategy extends MassInsertionStrategy
     }
 
     /**
-     * 建立插入资料 PDOStatement 物件.
-     *
-     * @param  array  $fields
-     * @return \PDOStatement
-     */
-    protected function buildInsertPdoStatement(array $fields)
-    {
-        $pdo = $this->getConnection()->getPdo();
-        return $pdo->prepare($this->buildInsertQuery($this->getTable(), $fields));
-    }
-
-    /**
-     * 建立查询资料是否已存在的 PDOStatement 物件.
-     *
-     * @param  array  $keys
-     * @return \PDOStatement
-     */
-    protected function buildExistPdoStatement(array $keys)
-    {
-        $pdo = $this->getConnection()->getPdo();
-        return $pdo->prepare($this->buildExistQuery($this->getTable(), $keys));
-    }
-
-    /**
-     * 建立查询资料是否已存在 SQL.
-     *
-     * @param  string  $table
-     * @param  array   $keys
-     * @return string
-     */
-    protected function buildExistQuery($table, array $keys)
-    {
-        $selectClause = 'SELECT COUNT(*) AS count FROM ' . $table;
-        $whereClause  = ' WHERE ' . implode(' AND ', array_map(function ($key) {
-            return $key . ' = :' . $key;
-        }, $keys));
-
-        return $selectClause . $whereClause;
-    }
-
-    /**
-     * 建立插入资料 SQL.
-     *
-     * @param  string  $table
-     * @param  array   $fields
-     * @return string
-     */
-    protected function buildInsertQuery($table, array $fields)
-    {
-        $insertClause = 'INSERT INTO ' . $table;
-        $keyClause    = ' (' . implode(',', $fields). ')';
-        $valueClause  = ' VALUES(' . implode(',', array_map(function ($name) {
-            return ':' . $name;
-        }, $fields)) . ')';
-
-        return $insertClause . $keyClause . $valueClause;
-    }
-
-    /**
      * 清除已存在的资料.
      *
      * @param  array  $data
@@ -99,7 +45,7 @@ class GenericIssueInfoStrategy extends MassInsertionStrategy
     protected function cleanExists(array $data)
     {
         $keys = [static::FIELD_LOTTERY_ID, static::FIELD_ISSUE];
-        $stmt = $this->buildExistPdoStatement($keys);
+        $stmt = $this->buildExistPdoStatement($this->getConnection(), $keys);
 
         return array_filter($data, function ($row) use ($stmt) {
             $stmt->bindParam(':' . static::FIELD_LOTTERY_ID, $row[static::FIELD_LOTTERY_ID]);
@@ -123,22 +69,7 @@ class GenericIssueInfoStrategy extends MassInsertionStrategy
      */
     protected function runInsert(array $data)
     {
-        // 无资料不用处理
-        if (! $data) {
-            return $this;
-        }
-
-        $fields = array_keys(head($data));
-        $stmt   = $this->buildInsertPdoStatement($fields);
-        foreach ($data as $row) {
-
-            foreach ($row as $key => $value) {
-                $stmt->bindValue(':' . $key, $value);
-            }
-
-            $stmt->execute();
-            $stmt->closeCursor();
-        }
+        $this->insertRows($this->getConnection(), $this->getTable(), $data);
         return $this;
     }
 }

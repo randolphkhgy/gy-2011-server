@@ -3,10 +3,13 @@
 namespace App\IssueInfoWriter\MassInsertionStrategy;
 
 use App\IssueInfoWriter\CsvFile;
+use App\IssueInfoWriter\QueryTrait\MySqlInsertIgnoreStatementQuery;
 use Illuminate\Database\Connection;
 
 class MySqlIssueInfoStrategy extends GenericIssueInfoStrategy
 {
+    use MySqlInsertIgnoreStatementQuery;
+
     /**
      * 写入资料.
      *
@@ -134,5 +137,17 @@ class MySqlIssueInfoStrategy extends GenericIssueInfoStrategy
             }, $fields)) . ')';
 
         return $insertClause . $keyClause . $valueClause;
+    }
+
+    /**
+     * 执写资料写入.
+     *
+     * @param  array  $data
+     * @return $this
+     */
+    protected function runInsert(array $data)
+    {
+        $this->insertIgnoreRows($this->getConnection(), $this->getTable(), $data);
+        return $this;
     }
 }
