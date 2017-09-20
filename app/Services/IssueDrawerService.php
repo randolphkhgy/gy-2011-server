@@ -198,7 +198,7 @@ class IssueDrawerService
         if ($data) {
             $startNumber = $this->generator->getNumberFromIssue($data['first'], $lotteryId);
 
-            $issues = $this->generator->generate($lotteryId, $date, $startNumber);
+            $issues = iterator_to_array($this->generator->generate($lotteryId, $date, $startNumber));
 
             return $data['issues'];
         }
