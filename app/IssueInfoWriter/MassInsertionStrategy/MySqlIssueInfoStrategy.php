@@ -110,13 +110,13 @@ class MySqlIssueInfoStrategy extends GenericIssueInfoStrategy
      */
     protected function buildQuery(Connection $db, $file, array $columns)
     {
-        $loadDataClause        = 'LOAD DATA LOCAL INFILE ' . $db->getPdo()->quote($file);
-        $insertClause          = ' IGNORE INTO TABLE ' . $this->getTable();
-        $enclosedClause        = ' FIELDS TERMINATED BY \',\'';
-        $linesTerminatedClause = ' LINES TERMINATED BY ' . $db->getPdo()->quote(PHP_EOL);
-        $columnsClause         = ' (' . implode(',', $columns) . ')';
+        $loadDataClause         = 'LOAD DATA LOCAL INFILE ' . $db->getPdo()->quote($file);
+        $insertClause           = ' IGNORE INTO TABLE ' . $this->getTable();
+        $fieldsTerminatedClause = ' FIELDS TERMINATED BY \',\' ENCLOSED BY \'"\'';
+        $linesTerminatedClause  = ' LINES TERMINATED BY ' . $db->getPdo()->quote(PHP_EOL);
+        $columnsClause          = ' (' . implode(',', $columns) . ')';
 
-        return $loadDataClause . $insertClause . $enclosedClause . $linesTerminatedClause . $columnsClause;
+        return $loadDataClause . $insertClause . $fieldsTerminatedClause . $linesTerminatedClause . $columnsClause;
     }
 
     /**
