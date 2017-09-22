@@ -17,19 +17,22 @@ trait InsertRowsStatementQuery
     protected function buildInsertPdoStatement(Connection $connection, $table, array $fields)
     {
         $pdo = $connection->getPdo();
-        return $pdo->prepare($this->buildInsertQuery($table, $fields));
+        return $pdo->prepare($this->buildInsertQuery($connection, $table, $fields));
     }
 
     /**
      * 建立插入资料 SQL.
      *
+     * @param  \Illuminate\Database\Connection  $connection
      * @param  string  $table
      * @param  array   $fields
      * @return string
      */
-    protected function buildInsertQuery($table, array $fields)
+    protected function buildInsertQuery(Connection $connection, $table, array $fields)
     {
-        $insertClause = 'INSERT INTO ' . $table;
+        $tablePrefix  = (string) $connection->getConfig('prefix');
+
+        $insertClause = 'INSERT INTO ' . $tablePrefix . $table;
         $keyClause    = ' (' . implode(',', $fields). ')';
         $valueClause  = ' VALUES(' . implode(',', array_map(function ($name) {
                 return ':' . $name;

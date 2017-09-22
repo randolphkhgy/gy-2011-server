@@ -3,7 +3,6 @@
 namespace App\IssueInfoWriter\MassInsertionStrategy;
 
 use App\IssueInfoWriter\PgDataFile;
-use Illuminate\Database\Connection;
 
 class PgSqlIssueInfoStrategy extends GenericIssueInfoStrategy
 {
@@ -15,8 +14,7 @@ class PgSqlIssueInfoStrategy extends GenericIssueInfoStrategy
      */
     public function write(array $array = [])
     {
-        $data = $this->cleanExists($array);
-        ($data) && $this->writeFromFile($this->createPgDataFile($data));
+        ($array) && $this->writeFromFile($this->createPgDataFile($array));
         return $this;
     }
 
@@ -39,26 +37,12 @@ class PgSqlIssueInfoStrategy extends GenericIssueInfoStrategy
      */
     protected function writeFromFile(PgDataFile $pgData)
     {
-        $db    = $this->getConnection();
-        $query = $this->buildQuery($db, $pgData->file(), $pgData->columns());
-        $db->unprepared($query);
+        $connection     = $this->getConnection();
+        $pdo            = $connection->getPdo();
+        $tablePrefix    = (string) $connection->getConfig('prefix');
+        $table          = $tablePrefix . $this->getTable();
+
+        $pdo->pgsqlCopyFromFile($table, $pgData->file(), null, null, implode(',', $pgData->columns()));
         return $this;
-    }
-
-    /**
-     * 建立 SQL.
-     *
-     * @param  \Illuminate\Database\Connection  $db
-     * @param  string  $file
-     * @param  array   $columns
-     * @return string
-     */
-    protected function buildQuery(Connection $db, $file, array $columns)
-    {
-        $copyClause = 'COPY ' . $this->getTable();
-        $keyClause  = ' (' . implode(',', $columns). ')';
-        $fromClause = ' FROM ' . $db->getPdo()->quote($file);
-
-        return $copyClause . $keyClause . $fromClause;
     }
 }

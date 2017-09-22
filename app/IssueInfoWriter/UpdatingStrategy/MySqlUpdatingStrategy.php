@@ -23,13 +23,14 @@ class MySqlUpdatingStrategy extends IssueInfoUpdatingStrategy
      */
     protected function insertRows(TmpIssueInfoTable $tmpTable)
     {
-        $table = $this->getTable();
-        $conn  = $this->getConnection();
+        $table         = $this->getTable();
+        $conn          = $this->getConnection();
+        $tablePrefix   = (string) $conn->getConfig('prefix');
 
-        $insertClause  = 'INSERT IGNORE INTO ' . $table;
+        $insertClause  = 'INSERT IGNORE INTO ' . $tablePrefix . $table;
         $columnsClause = ' (' . implode(',', $tmpTable->getColumnsWithoutPK()) . ')';
         $selectClause  = ' SELECT ' . implode(',', $tmpTable->getColumnsWithoutPK());
-        $fromClause    = ' FROM ' . $tmpTable->getTable();
+        $fromClause    = ' FROM ' . $tablePrefix . $tmpTable->getTable();
 
         $sql = $insertClause . $columnsClause . $selectClause . $fromClause;
 
@@ -44,8 +45,9 @@ class MySqlUpdatingStrategy extends IssueInfoUpdatingStrategy
      */
     protected function writeCode(TmpIssueInfoTable $tmpTable)
     {
-        $table = $this->getTable();
-        $conn  = $this->getConnection();
+        $table        = $this->getTable();
+        $conn         = $this->getConnection();
+        $tablePrefix  = (string) $conn->getConfig('prefix');
 
         $updates = [
             'issue.code = tmp.code',
@@ -55,8 +57,8 @@ class MySqlUpdatingStrategy extends IssueInfoUpdatingStrategy
             'issue.statuscode = tmp.statuscode',
         ];
 
-        $updateClause = 'UPDATE ' . $table . ' AS issue';
-        $join1Clause  = ' INNER JOIN ' . $tmpTable->getTable() . ' AS tmp';
+        $updateClause = 'UPDATE ' . $tablePrefix . $table . ' AS issue';
+        $join1Clause  = ' INNER JOIN ' . $tablePrefix . $tmpTable->getTable() . ' AS tmp';
         $on1Clause    = ' ON issue.lotteryid = tmp.lotteryid AND issue.issue = tmp.issue';
         $setClause    = ' SET ' . implode(',', $updates);
         $whereClause  = ' WHERE issue.statusfetch = 0 AND tmp.statusfetch <> 0';

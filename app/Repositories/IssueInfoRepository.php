@@ -39,9 +39,27 @@ class IssueInfoRepository extends BaseRepository
     public function generateBatch($lotteryId, $array)
     {
         $data   = $this->combineIssues($lotteryId, $array);
+        $this->setRowsDefaults($data);
+
         $writer = app()->make(IssueInfoWriter::class);
         $writer->write($data);
         return true;
+    }
+
+    /**
+     * @param  array  $rows
+     * @return array
+     */
+    protected function setRowsDefaults(array &$rows)
+    {
+        array_walk($rows, function (&$row) {
+            isset($row['code'])        || ($row['code']        = '');
+            isset($row['writetime'])   || ($row['writetime']   = null);
+            isset($row['writeid'])     || ($row['writeid']     = 0);
+            isset($row['statusfetch']) || ($row['statusfetch'] = 0);
+            isset($row['statuscode'])  || ($row['statuscode']  = 0);
+        });
+        return $rows;
     }
 
     /**
@@ -58,30 +76,6 @@ class IssueInfoRepository extends BaseRepository
         return array_map(function ($row) use ($baseArray) {
             return $baseArray + $row;
         }, $array);
-    }
-
-    /**
-     * @param  int     $lotteryId
-     * @param  string  $issue
-     * @param  string  $code
-     * @return $this
-     */
-    public function writeCode($lotteryId, $issue, $code)
-    {
-        $writer = new IssueInfoCodeWriter($this->model);
-        $writer->writeCode($lotteryId, $issue, $code);
-        return $this;
-    }
-
-    /**
-     * @param  array  $array
-     * @return $this
-     */
-    public function writeArray(array $array)
-    {
-        $writer = new IssueInfoCodeWriter($this->model);
-        $writer->writeArray($array);
-        return $this;
     }
 
     /**

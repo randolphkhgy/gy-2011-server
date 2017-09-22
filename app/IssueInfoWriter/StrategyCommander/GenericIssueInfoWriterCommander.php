@@ -98,23 +98,26 @@ class GenericIssueInfoWriterCommander extends IssueInfoWriterCommander
     protected function buildUpdatePdoStatement(Connection $connection, $table, array $columns)
     {
         $pdo = $connection->getPdo();
-        return $pdo->prepare($this->buildUpdateQuery($table, $columns));
+        return $pdo->prepare($this->buildUpdateQuery($connection, $table, $columns));
     }
 
     /**
+     * @param  \Illuminate\Database\Connection $connection
      * @param  string  $table
      * @param  array   $columns
      * @return string
      */
-    protected function buildUpdateQuery($table, array $columns)
+    protected function buildUpdateQuery(Connection $connection, $table, array $columns)
     {
+        $tablePrefix  = (string) $connection->getConfig('prefix');
+
         $where = [
             static::FIELD_LOTTERY_ID . ' = :' . static::FIELD_LOTTERY_ID,
             static::FIELD_ISSUE . ' = :' . static::FIELD_ISSUE,
             'statusfetch = 0'
         ];
 
-        $updateClause = 'UPDATE ' . $table;
+        $updateClause = 'UPDATE ' . $tablePrefix . $table;
         $setClause    = ' SET ' . implode(',', array_map(function ($key) {
             return $key . ' = :' . $key;
         }, $columns));

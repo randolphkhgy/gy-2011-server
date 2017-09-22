@@ -16,19 +16,22 @@ trait CountRowsStatementQuery
     protected function buildCountRowsPdoStatement(Connection $connection, array $keys)
     {
         $pdo = $connection->getPdo();
-        return $pdo->prepare($this->buildCountRowsQuery($this->getTable(), $keys));
+        return $pdo->prepare($this->buildCountRowsQuery($connection, $this->getTable(), $keys));
     }
 
     /**
      * 建立查询资料笔数 SQL.
      *
+     * @param  \Illuminate\Database\Connection $connection
      * @param  string  $table
      * @param  array   $keys
      * @return string
      */
-    protected function buildCountRowsQuery($table, array $keys)
+    protected function buildCountRowsQuery(Connection $connection, $table, array $keys)
     {
-        $selectClause = 'SELECT COUNT(*) AS count FROM ' . $table;
+        $tablePrefix  = (string) $connection->getConfig('prefix');
+
+        $selectClause = 'SELECT COUNT(*) AS count FROM ' . $tablePrefix . $table;
         $whereClause  = ' WHERE ' . implode(' AND ', array_map(function ($key) {
                 return $key . ' = :' . $key;
             }, $keys));
@@ -46,19 +49,20 @@ trait CountRowsStatementQuery
     protected function buildExistPdoStatement(Connection $connection, array $keys)
     {
         $pdo = $connection->getPdo();
-        return $pdo->prepare($this->buildExistQuery($this->getTable(), $keys));
+        return $pdo->prepare($this->buildExistQuery($connection, $this->getTable(), $keys));
     }
 
     /**
      * 建立查询资料是否已存在 SQL.
      *
+     * @param  \Illuminate\Database\Connection $connection
      * @param  string  $table
      * @param  array   $keys
      * @return string
      */
-    protected function buildExistQuery($table, array $keys)
+    protected function buildExistQuery(Connection $connection, $table, array $keys)
     {
         // 使用 count 的 SQL.
-        return $this->buildCountRowsQuery($table, $keys);
+        return $this->buildCountRowsQuery($connection, $table, $keys);
     }
 }

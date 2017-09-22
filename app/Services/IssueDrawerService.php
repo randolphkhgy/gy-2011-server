@@ -73,43 +73,12 @@ class IssueDrawerService
                 $issue['writeid']     = 255;
                 $issue['statusfetch'] = 2;
                 $issue['statuscode']  = 2;
-            } else {
-                $issue['code']        = '';
-                $issue['writetime']   = null;
-                $issue['writeid']     = 0;
-                $issue['statusfetch'] = 0;
-                $issue['statuscode']  = 0;
             }
 
             return $issue;
         }, $data, $issues);
 
         return $this->generator->save($lotteryId, $array);
-    }
-
-    /**
-     * @return int
-     */
-    public function checkDrawing()
-    {
-        $drawer         = $this->drawerFactory->makeDrawer();
-        $limit          = 5;
-        $issueArray     = $this->issueInfoRepo->needsDrawing($limit)->all();
-        $count          = 0;
-
-        foreach ($issueArray as $row) {
-            $identity       = GyTreasureIdentity::getIdentity($row['lotteryid']);
-            $winningNumbers = $drawer->drawSingle($identity, $row['issue'], new Carbon($row['belongdate']));
-
-            if ($winningNumbers) {
-                $code = CodeFormatter::format($row['lotteryid'], $winningNumbers);
-                $this->issueInfoRepo->writeCode($row['lotteryid'], $row['issue'], $code);
-
-                $count++;
-            }
-        }
-
-        return $count;
     }
 
     /**

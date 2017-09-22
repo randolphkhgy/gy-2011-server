@@ -6,6 +6,7 @@ use App\IssueInfoWriter\StrategyCommander\GenericIssueInfoWriterCommander;
 use App\IssueInfoWriter\StrategyCommander\IssueInfoWriterCommander;
 use App\IssueInfoWriter\StrategyCommander\MySqlIssueInfoWriterCommander;
 use App\IssueInfoWriter\StrategyCommander\PgSqlIssueInfoWriterCommander;
+use App\IssueInfoWriter\StrategyCommander\SqliteIssueInfoWriterCommander;
 use App\Models\IssueInfo;
 
 class IssueInfoWriter
@@ -55,6 +56,9 @@ class IssueInfoWriter
                 break;
             case 'pgsql':
                 $this->setCommander(new PgSqlIssueInfoWriterCommander($conn, $table));
+                break;
+            case 'sqlite':
+                $this->setCommander(new SqliteIssueInfoWriterCommander($conn, $table));
                 break;
             default:
                 $this->setCommander(new GenericIssueInfoWriterCommander($conn, $table));
