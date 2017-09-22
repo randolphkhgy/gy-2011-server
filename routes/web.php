@@ -11,10 +11,6 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
-
 Route::get('/lotteries', 'LotteryController@index');
 Route::get('/lotteries/shuzi', 'LotteryController@shuzi');
 Route::get('/lotteries/shuzivn', 'LotteryController@shuzivn');
