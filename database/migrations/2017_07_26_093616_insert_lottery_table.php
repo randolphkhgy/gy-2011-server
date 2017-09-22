@@ -1,7 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Support\Facades\DB;
 
 class InsertLotteryTable extends Migration
 {
@@ -12,7 +12,9 @@ class InsertLotteryTable extends Migration
      */
     public function up()
     {
-        DB::table('lottery')->insert(
+        $conn = Schema::getConnection();
+
+        $conn->table('lottery')->insert(
             array (
                 'lotteryid' => '1',
                 'cnname' => '重庆时时彩',
@@ -42,7 +44,7 @@ class InsertLotteryTable extends Migration
                 'country' => '1',
             )
         );
-        DB::table('lottery')->insert(
+        $conn->table('lottery')->insert(
             array (
                 'lotteryid' => '3',
                 'cnname' => '江西时时彩',
@@ -72,7 +74,7 @@ class InsertLotteryTable extends Migration
                 'country' => '1',
             )
         );
-        DB::table('lottery')->insert(
+        $conn->table('lottery')->insert(
             array (
                 'lotteryid' => '5',
                 'cnname' => '山东11选5',
@@ -102,7 +104,7 @@ class InsertLotteryTable extends Migration
                 'country' => '1',
             )
         );
-        DB::table('lottery')->insert(
+        $conn->table('lottery')->insert(
             array (
                 'lotteryid' => '6',
                 'cnname' => '新疆时时彩',
@@ -132,7 +134,7 @@ class InsertLotteryTable extends Migration
                 'country' => '1',
             )
         );
-        DB::table('lottery')->insert(
+        $conn->table('lottery')->insert(
             array (
                 'lotteryid' => '7',
                 'cnname' => '江西11选5',
@@ -162,7 +164,7 @@ class InsertLotteryTable extends Migration
                 'country' => '1',
             )
         );
-        DB::table('lottery')->insert(
+        $conn->table('lottery')->insert(
             array (
                 'lotteryid' => '8',
                 'cnname' => '广东11选5',
@@ -192,7 +194,7 @@ class InsertLotteryTable extends Migration
                 'country' => '1',
             )
         );
-        DB::table('lottery')->insert(
+        $conn->table('lottery')->insert(
             array (
                 'lotteryid' => '9',
                 'cnname' => '北京快乐彩',
@@ -222,7 +224,7 @@ class InsertLotteryTable extends Migration
                 'country' => '1',
             )
         );
-        DB::table('lottery')->insert(
+        $conn->table('lottery')->insert(
             array (
                 'lotteryid' => '10',
                 'cnname' => '重庆11选5',
@@ -252,7 +254,7 @@ class InsertLotteryTable extends Migration
                 'country' => '1',
             )
         );
-        DB::table('lottery')->insert(
+        $conn->table('lottery')->insert(
             array (
                 'lotteryid' => '11',
                 'cnname' => '福彩3D',
@@ -282,7 +284,7 @@ class InsertLotteryTable extends Migration
                 'country' => '1',
             )
         );
-        DB::table('lottery')->insert(
+        $conn->table('lottery')->insert(
             array (
                 'lotteryid' => '12',
                 'cnname' => '体彩P3',
@@ -312,7 +314,7 @@ class InsertLotteryTable extends Migration
                 'country' => '1',
             )
         );
-        DB::table('lottery')->insert(
+        $conn->table('lottery')->insert(
             array (
                 'lotteryid' => '13',
                 'cnname' => '天津时时彩',
@@ -342,7 +344,7 @@ class InsertLotteryTable extends Migration
                 'country' => '1',
             )
         );
-        DB::table('lottery')->insert(
+        $conn->table('lottery')->insert(
             array (
                 'lotteryid' => '18',
                 'cnname' => '两分时时彩',
@@ -372,7 +374,7 @@ class InsertLotteryTable extends Migration
                 'country' => '1',
             )
         );
-        DB::table('lottery')->insert(
+        $conn->table('lottery')->insert(
             array (
                 'lotteryid' => '19',
                 'cnname' => '一分时时彩',
@@ -402,7 +404,7 @@ class InsertLotteryTable extends Migration
                 'country' => '1',
             )
         );
-        DB::table('lottery')->insert(
+        $conn->table('lottery')->insert(
             array (
                 'lotteryid' => '20',
                 'cnname' => '两分11选5',
@@ -432,7 +434,7 @@ class InsertLotteryTable extends Migration
                 'country' => '1',
             )
         );
-        DB::table('lottery')->insert(
+        $conn->table('lottery')->insert(
             array (
                 'lotteryid' => '22',
                 'cnname' => '圣亚秒秒彩',
@@ -462,7 +464,7 @@ class InsertLotteryTable extends Migration
                 'country' => '1',
             )
         );
-        DB::table('lottery')->insert(
+        $conn->table('lottery')->insert(
             array (
                 'lotteryid' => '52',
                 'cnname' => '极速3D',
@@ -492,7 +494,7 @@ class InsertLotteryTable extends Migration
                 'country' => '1',
             )
         );
-        DB::table('lottery')->insert(
+        $conn->table('lottery')->insert(
             array (
                 'lotteryid' => '53',
                 'cnname' => 'KS11Y',
@@ -522,7 +524,7 @@ class InsertLotteryTable extends Migration
                 'country' => '1',
             )
         );
-        DB::table('lottery')->insert(
+        $conn->table('lottery')->insert(
             array (
                 'lotteryid' => '54',
                 'cnname' => '一分11选5',
@@ -552,7 +554,7 @@ class InsertLotteryTable extends Migration
                 'country' => '1',
             )
         );
-        DB::table('lottery')->insert(
+        $conn->table('lottery')->insert(
             array (
                 'lotteryid' => '55',
                 'cnname' => '小游戏',
@@ -582,7 +584,7 @@ class InsertLotteryTable extends Migration
                 'country' => '1',
             )
         );
-        DB::table('lottery')->insert(
+        $conn->table('lottery')->insert(
             array (
                 'lotteryid' => '56',
                 'cnname' => '秒秒时时彩',
@@ -612,7 +614,7 @@ class InsertLotteryTable extends Migration
                 'country' => '1',
             )
         );
-        DB::table('lottery')->insert(
+        $conn->table('lottery')->insert(
             array (
                 'lotteryid' => '57',
                 'cnname' => '秒秒11选5',
@@ -642,7 +644,7 @@ class InsertLotteryTable extends Migration
                 'country' => '1',
             )
         );
-        DB::table('lottery')->insert(
+        $conn->table('lottery')->insert(
             array (
                 'lotteryid' => '58',
                 'cnname' => '一分快乐8',
@@ -672,7 +674,7 @@ class InsertLotteryTable extends Migration
                 'country' => '1',
             )
         );
-        DB::table('lottery')->insert(
+        $conn->table('lottery')->insert(
             array (
                 'lotteryid' => '59',
                 'cnname' => '胡志明彩票',
@@ -702,7 +704,7 @@ class InsertLotteryTable extends Migration
                 'country' => '3',
             )
         );
-        DB::table('lottery')->insert(
+        $conn->table('lottery')->insert(
             array (
                 'lotteryid' => '60',
                 'cnname' => '越南一分彩',
@@ -732,7 +734,7 @@ class InsertLotteryTable extends Migration
                 'country' => '3',
             )
         );
-        DB::table('lottery')->insert(
+        $conn->table('lottery')->insert(
             array (
                 'lotteryid' => '61',
                 'cnname' => '河内彩票',
@@ -762,7 +764,7 @@ class InsertLotteryTable extends Migration
                 'country' => '3',
             )
         );
-        DB::table('lottery')->insert(
+        $conn->table('lottery')->insert(
             array (
                 'lotteryid' => '62',
                 'cnname' => '五分时时彩',
@@ -792,7 +794,7 @@ class InsertLotteryTable extends Migration
                 'country' => '1',
             )
         );
-        DB::table('lottery')->insert(
+        $conn->table('lottery')->insert(
             array (
                 'lotteryid' => '63',
                 'cnname' => '五分11选5',
@@ -822,7 +824,7 @@ class InsertLotteryTable extends Migration
                 'country' => '1',
             )
         );
-        DB::table('lottery')->insert(
+        $conn->table('lottery')->insert(
             array (
                 'lotteryid' => '64',
                 'cnname' => '越南五分彩',
@@ -852,7 +854,7 @@ class InsertLotteryTable extends Migration
                 'country' => '3',
             )
         );
-        DB::table('lottery')->insert(
+        $conn->table('lottery')->insert(
             array (
                 'lotteryid' => '65',
                 'cnname' => '同塔彩票',
@@ -882,7 +884,7 @@ class InsertLotteryTable extends Migration
                 'country' => '3',
             )
         );
-        DB::table('lottery')->insert(
+        $conn->table('lottery')->insert(
             array (
                 'lotteryid' => '67',
                 'cnname' => '金瓯彩票',
@@ -912,7 +914,7 @@ class InsertLotteryTable extends Migration
                 'country' => '3',
             )
         );
-        DB::table('lottery')->insert(
+        $conn->table('lottery')->insert(
             array (
                 'lotteryid' => '68',
                 'cnname' => '槟椥彩票',
@@ -942,7 +944,7 @@ class InsertLotteryTable extends Migration
                 'country' => '3',
             )
         );
-        DB::table('lottery')->insert(
+        $conn->table('lottery')->insert(
             array (
                 'lotteryid' => '69',
                 'cnname' => '头顿彩票',
@@ -972,7 +974,7 @@ class InsertLotteryTable extends Migration
                 'country' => '3',
             )
         );
-        DB::table('lottery')->insert(
+        $conn->table('lottery')->insert(
             array (
                 'lotteryid' => '70',
                 'cnname' => '薄辽彩票',
@@ -1002,7 +1004,7 @@ class InsertLotteryTable extends Migration
                 'country' => '3',
             )
         );
-        DB::table('lottery')->insert(
+        $conn->table('lottery')->insert(
             array (
                 'lotteryid' => '71',
                 'cnname' => '同奈彩票',
@@ -1032,7 +1034,7 @@ class InsertLotteryTable extends Migration
                 'country' => '3',
             )
         );
-        DB::table('lottery')->insert(
+        $conn->table('lottery')->insert(
             array (
                 'lotteryid' => '72',
                 'cnname' => '芹苴彩票',
@@ -1062,7 +1064,7 @@ class InsertLotteryTable extends Migration
                 'country' => '3',
             )
         );
-        DB::table('lottery')->insert(
+        $conn->table('lottery')->insert(
             array (
                 'lotteryid' => '73',
                 'cnname' => '朔庄彩票',
@@ -1092,7 +1094,7 @@ class InsertLotteryTable extends Migration
                 'country' => '3',
             )
         );
-        DB::table('lottery')->insert(
+        $conn->table('lottery')->insert(
             array (
                 'lotteryid' => '74',
                 'cnname' => '西宁彩票',
@@ -1122,7 +1124,7 @@ class InsertLotteryTable extends Migration
                 'country' => '3',
             )
         );
-        DB::table('lottery')->insert(
+        $conn->table('lottery')->insert(
             array (
                 'lotteryid' => '75',
                 'cnname' => '安江彩票',
@@ -1152,7 +1154,7 @@ class InsertLotteryTable extends Migration
                 'country' => '3',
             )
         );
-        DB::table('lottery')->insert(
+        $conn->table('lottery')->insert(
             array (
                 'lotteryid' => '76',
                 'cnname' => '平顺彩票',
@@ -1182,7 +1184,7 @@ class InsertLotteryTable extends Migration
                 'country' => '3',
             )
         );
-        DB::table('lottery')->insert(
+        $conn->table('lottery')->insert(
             array (
                 'lotteryid' => '77',
                 'cnname' => '永隆彩票',
@@ -1212,7 +1214,7 @@ class InsertLotteryTable extends Migration
                 'country' => '3',
             )
         );
-        DB::table('lottery')->insert(
+        $conn->table('lottery')->insert(
             array (
                 'lotteryid' => '78',
                 'cnname' => '平阳彩票',
@@ -1242,7 +1244,7 @@ class InsertLotteryTable extends Migration
                 'country' => '3',
             )
         );
-        DB::table('lottery')->insert(
+        $conn->table('lottery')->insert(
             array (
                 'lotteryid' => '79',
                 'cnname' => '茶荣彩票',
@@ -1272,7 +1274,7 @@ class InsertLotteryTable extends Migration
                 'country' => '3',
             )
         );
-        DB::table('lottery')->insert(
+        $conn->table('lottery')->insert(
             array (
                 'lotteryid' => '80',
                 'cnname' => '隆安彩票',
@@ -1302,7 +1304,7 @@ class InsertLotteryTable extends Migration
                 'country' => '3',
             )
         );
-        DB::table('lottery')->insert(
+        $conn->table('lottery')->insert(
             array (
                 'lotteryid' => '81',
                 'cnname' => '后江彩票',
@@ -1332,7 +1334,7 @@ class InsertLotteryTable extends Migration
                 'country' => '3',
             )
         );
-        DB::table('lottery')->insert(
+        $conn->table('lottery')->insert(
             array (
                 'lotteryid' => '82',
                 'cnname' => '平福彩票',
@@ -1362,7 +1364,7 @@ class InsertLotteryTable extends Migration
                 'country' => '3',
             )
         );
-        DB::table('lottery')->insert(
+        $conn->table('lottery')->insert(
             array (
                 'lotteryid' => '83',
                 'cnname' => '前江彩票',
@@ -1392,7 +1394,7 @@ class InsertLotteryTable extends Migration
                 'country' => '3',
             )
         );
-        DB::table('lottery')->insert(
+        $conn->table('lottery')->insert(
             array (
                 'lotteryid' => '84',
                 'cnname' => '坚江彩票',
@@ -1422,7 +1424,7 @@ class InsertLotteryTable extends Migration
                 'country' => '3',
             )
         );
-        DB::table('lottery')->insert(
+        $conn->table('lottery')->insert(
             array (
                 'lotteryid' => '85',
                 'cnname' => '大叻彩票',
@@ -1452,7 +1454,7 @@ class InsertLotteryTable extends Migration
                 'country' => '3',
             )
         );
-        DB::table('lottery')->insert(
+        $conn->table('lottery')->insert(
             array (
                 'lotteryid' => '86',
                 'cnname' => '广宁彩票',
@@ -1482,7 +1484,7 @@ class InsertLotteryTable extends Migration
                 'country' => '3',
             )
         );
-        DB::table('lottery')->insert(
+        $conn->table('lottery')->insert(
             array (
                 'lotteryid' => '87',
                 'cnname' => '北宁彩票',
@@ -1512,7 +1514,7 @@ class InsertLotteryTable extends Migration
                 'country' => '3',
             )
         );
-        DB::table('lottery')->insert(
+        $conn->table('lottery')->insert(
             array (
                 'lotteryid' => '88',
                 'cnname' => '海防彩票',
@@ -1542,7 +1544,7 @@ class InsertLotteryTable extends Migration
                 'country' => '3',
             )
         );
-        DB::table('lottery')->insert(
+        $conn->table('lottery')->insert(
             array (
                 'lotteryid' => '89',
                 'cnname' => '南定彩票',
@@ -1572,7 +1574,7 @@ class InsertLotteryTable extends Migration
                 'country' => '3',
             )
         );
-        DB::table('lottery')->insert(
+        $conn->table('lottery')->insert(
             array (
                 'lotteryid' => '90',
                 'cnname' => '太平彩票',
@@ -1602,7 +1604,7 @@ class InsertLotteryTable extends Migration
                 'country' => '3',
             )
         );
-        DB::table('lottery')->insert(
+        $conn->table('lottery')->insert(
             array (
                 'lotteryid' => '91',
                 'cnname' => '承天顺化彩票',
@@ -1632,7 +1634,7 @@ class InsertLotteryTable extends Migration
                 'country' => '3',
             )
         );
-        DB::table('lottery')->insert(
+        $conn->table('lottery')->insert(
             array (
                 'lotteryid' => '92',
                 'cnname' => '富安彩票',
@@ -1662,7 +1664,7 @@ class InsertLotteryTable extends Migration
                 'country' => '3',
             )
         );
-        DB::table('lottery')->insert(
+        $conn->table('lottery')->insert(
             array (
                 'lotteryid' => '93',
                 'cnname' => '广南彩票',
@@ -1692,7 +1694,7 @@ class InsertLotteryTable extends Migration
                 'country' => '3',
             )
         );
-        DB::table('lottery')->insert(
+        $conn->table('lottery')->insert(
             array (
                 'lotteryid' => '94',
                 'cnname' => '得勒彩票',
@@ -1722,7 +1724,7 @@ class InsertLotteryTable extends Migration
                 'country' => '3',
             )
         );
-        DB::table('lottery')->insert(
+        $conn->table('lottery')->insert(
             array (
                 'lotteryid' => '95',
                 'cnname' => '庆和彩票',
@@ -1752,7 +1754,7 @@ class InsertLotteryTable extends Migration
                 'country' => '3',
             )
         );
-        DB::table('lottery')->insert(
+        $conn->table('lottery')->insert(
             array (
                 'lotteryid' => '96',
                 'cnname' => '平定彩票',
@@ -1782,7 +1784,7 @@ class InsertLotteryTable extends Migration
                 'country' => '3',
             )
         );
-        DB::table('lottery')->insert(
+        $conn->table('lottery')->insert(
             array (
                 'lotteryid' => '97',
                 'cnname' => '广平彩票',
@@ -1812,7 +1814,7 @@ class InsertLotteryTable extends Migration
                 'country' => '3',
             )
         );
-        DB::table('lottery')->insert(
+        $conn->table('lottery')->insert(
             array (
                 'lotteryid' => '98',
                 'cnname' => '广治彩票',
@@ -1842,7 +1844,7 @@ class InsertLotteryTable extends Migration
                 'country' => '3',
             )
         );
-        DB::table('lottery')->insert(
+        $conn->table('lottery')->insert(
             array (
                 'lotteryid' => '99',
                 'cnname' => '嘉莱彩票',
@@ -1872,7 +1874,7 @@ class InsertLotteryTable extends Migration
                 'country' => '3',
             )
         );
-        DB::table('lottery')->insert(
+        $conn->table('lottery')->insert(
             array (
                 'lotteryid' => '100',
                 'cnname' => '宁顺彩票',
@@ -1902,7 +1904,7 @@ class InsertLotteryTable extends Migration
                 'country' => '3',
             )
         );
-        DB::table('lottery')->insert(
+        $conn->table('lottery')->insert(
             array (
                 'lotteryid' => '101',
                 'cnname' => '岘港彩票',
@@ -1932,7 +1934,7 @@ class InsertLotteryTable extends Migration
                 'country' => '3',
             )
         );
-        DB::table('lottery')->insert(
+        $conn->table('lottery')->insert(
             array (
                 'lotteryid' => '102',
                 'cnname' => '广义彩票',
@@ -1962,7 +1964,7 @@ class InsertLotteryTable extends Migration
                 'country' => '3',
             )
         );
-        DB::table('lottery')->insert(
+        $conn->table('lottery')->insert(
             array (
                 'lotteryid' => '103',
                 'cnname' => '多农彩票',
@@ -1992,7 +1994,7 @@ class InsertLotteryTable extends Migration
                 'country' => '3',
             )
         );
-        DB::table('lottery')->insert(
+        $conn->table('lottery')->insert(
             array (
                 'lotteryid' => '104',
                 'cnname' => '昆嵩彩票',
@@ -2022,7 +2024,7 @@ class InsertLotteryTable extends Migration
                 'country' => '3',
             )
         );
-        DB::table('lottery')->insert(
+        $conn->table('lottery')->insert(
             array (
                 'lotteryid' => '106',
                 'cnname' => '北京PK10',
@@ -2061,6 +2063,6 @@ class InsertLotteryTable extends Migration
      */
     public function down()
     {
-        DB::table('lottery')->truncate();
+        Schema::getConnection()->table('lottery')->truncate();
     }
 }
