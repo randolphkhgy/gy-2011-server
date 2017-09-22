@@ -20,7 +20,7 @@ abstract class TmpTableWriterCommander extends IssueInfoWriterCommander
     protected $updatingStrategy;
 
     /**
-     * MySqlIssueInfoWriterCommander constructor.
+     * TmpTableWriterCommander constructor.
      * @param \Illuminate\Database\Connection $connection
      * @param $table
      */
