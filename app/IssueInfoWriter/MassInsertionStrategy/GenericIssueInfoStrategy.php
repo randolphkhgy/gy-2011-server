@@ -9,9 +9,6 @@ class GenericIssueInfoStrategy extends MassInsertionStrategy
 {
     use CountRowsStatementQuery, InsertRowsStatementQuery;
 
-    const FIELD_LOTTERY_ID = 'lotteryid';
-    const FIELD_ISSUE      = 'issue';
-
     /**
      * 写入资料.
      *
