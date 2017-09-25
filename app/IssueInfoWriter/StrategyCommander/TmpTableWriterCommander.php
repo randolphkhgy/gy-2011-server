@@ -22,7 +22,7 @@ abstract class TmpTableWriterCommander extends IssueInfoWriterCommander
     /**
      * TmpTableWriterCommander constructor.
      * @param \Illuminate\Database\Connection $connection
-     * @param $table
+     * @param string $table
      */
     public function __construct(Connection $connection, $table)
     {
