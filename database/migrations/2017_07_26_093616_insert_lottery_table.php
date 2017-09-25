@@ -14,6 +14,11 @@ class InsertLotteryTable extends Migration
     {
         $conn = Schema::getConnection();
 
+        $isSqlServ   = ($conn->getDriverName() == 'sqlsrv');
+        $tablePrefix = (string) $conn->getConfig('prefix');
+
+        ($isSqlServ) && $conn->unprepared('SET IDENTITY_INSERT ' . $tablePrefix . 'lottery ON');
+
         $conn->table('lottery')->insert(
             array (
                 'lotteryid' => '1',
@@ -2054,6 +2059,8 @@ class InsertLotteryTable extends Migration
                 'country' => '1',
             )
         );
+
+        ($isSqlServ) && $conn->unprepared('SET IDENTITY_INSERT ' . $tablePrefix . 'lottery OFF');
     }
 
     /**

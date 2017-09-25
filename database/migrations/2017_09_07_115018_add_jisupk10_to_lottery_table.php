@@ -1,9 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Support\Facades\DB;
 
 class AddJisupk10ToLotteryTable extends Migration
 {
@@ -14,7 +12,14 @@ class AddJisupk10ToLotteryTable extends Migration
      */
     public function up()
     {
-        DB::table('lottery')->insert(
+        $conn = Schema::getConnection();
+
+        $isSqlServ   = ($conn->getDriverName() == 'sqlsrv');
+        $tablePrefix = (string) $conn->getConfig('prefix');
+
+        ($isSqlServ) && $conn->unprepared('SET IDENTITY_INSERT ' . $tablePrefix . 'lottery ON');
+
+        $conn->table('lottery')->insert(
             array (
                 'lotteryid' => '107',
                 'cnname' => '极速PK10',
@@ -44,6 +49,8 @@ class AddJisupk10ToLotteryTable extends Migration
                 'country' => '1',
             )
         );
+
+        ($isSqlServ) && $conn->unprepared('SET IDENTITY_INSERT ' . $tablePrefix . 'lottery OFF');
     }
 
     /**
@@ -53,6 +60,6 @@ class AddJisupk10ToLotteryTable extends Migration
      */
     public function down()
     {
-        DB::table('lottery')->where('lotteryid', '107')->delete();
+        Schema::getConnection()->table('lottery')->where('lotteryid', '107')->delete();
     }
 }
