@@ -59,7 +59,7 @@ class ImportMethodTable extends Migration
      */
     protected function sqlsrvSql()
     {
-        return database_path('pg_migration_method_table_sqlsrv.sql');
+        return database_path('sqlsrv_migration_method_table.sql');
     }
 
     /**
@@ -67,7 +67,7 @@ class ImportMethodTable extends Migration
      */
     protected function standardSql()
     {
-        return database_path('pg_migration_method_table.sql');
+        return database_path('migration_method_table.sql');
     }
 
     /**
