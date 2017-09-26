@@ -13,12 +13,24 @@ class TmpIssueInfoTable
     protected $table;
 
     /**
+     * @var \Illuminate\Database\Connection
+     */
+    protected $connection;
+
+    /**
+     * @var static[]
+     */
+    protected static $instances = [];
+
+    /**
      * TmpIssueInfoTable constructor.
      * @param string $table
+     * @param \Illuminate\Database\Connection $connection
      */
-    public function __construct($table)
+    public function __construct($table, Connection $connection)
     {
         $this->table = $table;
+        $this->connection = $connection;
     }
 
     /**
@@ -27,6 +39,14 @@ class TmpIssueInfoTable
     public function getTable()
     {
         return $this->table;
+    }
+
+    /**
+     * @return \Illuminate\Database\Connection
+     */
+    public function getConnection()
+    {
+        return $this->connection;
     }
 
     /**
@@ -59,10 +79,39 @@ class TmpIssueInfoTable
     }
 
     /**
+     * @return $this
+     */
+    protected function truncate()
+    {
+        $this->connection->table($this->getTable())->truncate();
+        return $this;
+    }
+
+    /**
      * @param  \Illuminate\Database\Connection  $connection
      * @return static
      */
     public static function generate(Connection $connection)
+    {
+        $connName = $connection->getName();
+
+        if (isset(static::$instances[$connName])) {
+
+            static::$instances[$connName]->truncate();
+
+        } else {
+
+            static::$instances[$connName] = static::newTable($connection);
+        }
+
+        return static::$instances[$connName];
+    }
+
+    /**
+     * @param  \Illuminate\Database\Connection  $connection
+     * @return static
+     */
+    protected static function newTable(Connection $connection)
     {
         $tableName = uniqid('tmp_issueinfo_');
 
@@ -88,6 +137,6 @@ class TmpIssueInfoTable
             $table->unique(['lotteryid', 'issue']);
         });
 
-        return new static($tableName);
+        return new static($tableName, $connection);
     }
 }
