@@ -12,13 +12,15 @@ class ImportMethodTable extends Migration
      */
     public function up()
     {
-
         switch (Schema::getConnection()->getDriverName()) {
             case 'mysql':
                 $this->mysqlImport($this->csv());
                 break;
             case 'pgsql':
                 $this->pgImport($this->pgSql());
+                break;
+            case 'sqlsrv':
+                $this->standardSqlImport($this->sqlsrvSql());
                 break;
             default:
                 $this->standardSqlImport($this->standardSql());
@@ -50,6 +52,14 @@ class ImportMethodTable extends Migration
     protected function pgSql()
     {
         return database_path('pg_migration_method_table.data');
+    }
+
+    /**
+     * @return string
+     */
+    protected function sqlsrvSql()
+    {
+        return database_path('pg_migration_method_table_sqlsrv.sql');
     }
 
     /**
