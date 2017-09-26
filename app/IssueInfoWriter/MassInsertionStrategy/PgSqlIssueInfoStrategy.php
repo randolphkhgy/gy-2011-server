@@ -7,6 +7,8 @@ use App\IssueInfoWriter\PgDataFile;
 class PgSqlIssueInfoStrategy extends GenericIssueInfoStrategy
 {
     /**
+     * 写入资料.
+     *
      * @param  array  $array
      * @return $this
      *

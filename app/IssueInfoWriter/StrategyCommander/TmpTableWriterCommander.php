@@ -10,6 +10,11 @@ use Illuminate\Database\Connection;
 abstract class TmpTableWriterCommander extends IssueInfoWriterCommander
 {
     /**
+     * @var bool
+     */
+    protected $useTransition = false;
+
+    /**
      * @var \App\IssueInfoWriter\MassInsertionStrategy\MassInsertionStrategy
      */
     protected $massInsertionStrategy;
@@ -105,9 +110,13 @@ abstract class TmpTableWriterCommander extends IssueInfoWriterCommander
         $conn     = $this->getConnection();
         $tmpTable = TmpIssueInfoTable::generate($conn);
 
+        ($this->useTransition) && $conn->beginTransaction();
+
         $this->getMassInsertionStrategy()->setTable($tmpTable->getTable())->write($array);
 
         $this->getUpdatingStrategy()->write($tmpTable);
+
+        ($this->useTransition) && $conn->commit();
 
         return $this;
     }
