@@ -12,7 +12,7 @@ abstract class TmpTableWriterCommander extends IssueInfoWriterCommander
     /**
      * @var bool
      */
-    protected $useTransition = false;
+    protected $useTransaction = false;
 
     /**
      * @var \App\IssueInfoWriter\MassInsertionStrategy\MassInsertionStrategy
@@ -110,13 +110,13 @@ abstract class TmpTableWriterCommander extends IssueInfoWriterCommander
         $conn     = $this->getConnection();
         $tmpTable = TmpIssueInfoTable::generate($conn);
 
-        ($this->useTransition) && $conn->beginTransaction();
+        ($this->useTransaction) && $conn->beginTransaction();
 
         $this->getMassInsertionStrategy()->setTable($tmpTable->getTable())->write($array);
 
         $this->getUpdatingStrategy()->write($tmpTable);
 
-        ($this->useTransition) && $conn->commit();
+        ($this->useTransaction) && $conn->commit();
 
         return $this;
     }

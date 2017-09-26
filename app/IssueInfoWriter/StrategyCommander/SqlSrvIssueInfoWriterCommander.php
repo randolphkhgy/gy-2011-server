@@ -10,7 +10,7 @@ class SqlSrvIssueInfoWriterCommander extends TmpTableWriterCommander
     /**
      * @var bool
      */
-    protected $useTransition = true;
+    protected $useTransaction = true;
 
     /**
      * @return string
