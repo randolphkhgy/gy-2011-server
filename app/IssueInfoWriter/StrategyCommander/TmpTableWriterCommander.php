@@ -94,7 +94,11 @@ abstract class TmpTableWriterCommander extends IssueInfoWriterCommander
      */
     public function write(array $array = [])
     {
+        ($this->useTransaction) && $this->getConnection()->beginTransaction();
+
         $this->writeInTmpTable($array);
+
+        ($this->useTransaction) && $this->getConnection()->commit();
 
         return $this;
     }
@@ -110,13 +114,9 @@ abstract class TmpTableWriterCommander extends IssueInfoWriterCommander
         $conn     = $this->getConnection();
         $tmpTable = TmpIssueInfoTable::generate($conn);
 
-        ($this->useTransaction) && $conn->beginTransaction();
-
         $this->getMassInsertionStrategy()->setTable($tmpTable->getTable())->write($array);
 
         $this->getUpdatingStrategy()->write($tmpTable);
-
-        ($this->useTransaction) && $conn->commit();
 
         return $this;
     }
