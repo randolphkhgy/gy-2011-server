@@ -9,12 +9,12 @@ class DrawingGeneratorFactory
 {
     /**
      * @param  int $lotteryId
-     * @return \GyTreasure\Issue\DrawingGenerator\DrawingGenerator
+     * @return \GyTreasure\Issue\DrawingGenerator\DrawingGenerator|null
      */
     public function make($lotteryId)
     {
         $identity = GyTreasureIdentity::getIdentity($lotteryId);
-        return DrawingGenerator::forge($identity);
+        return $identity ? DrawingGenerator::forge($identity) : null;
     }
 
     /**
@@ -24,6 +24,6 @@ class DrawingGeneratorFactory
     public static function isAvailable($lotteryId)
     {
         $identity = GyTreasureIdentity::getIdentity($lotteryId);
-        return DrawingStrategyFactory::isIdAvailable($identity);
+        return $identity ? DrawingStrategyFactory::isIdAvailable($identity) : false;
     }
 }
