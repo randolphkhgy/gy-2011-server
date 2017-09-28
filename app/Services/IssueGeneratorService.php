@@ -64,6 +64,25 @@ class IssueGeneratorService
     }
 
     /**
+     * 是否需要开始流水号.
+     *
+     * @param  int  $lotteryId
+     * @return bool
+     *
+     * @throws \App\Exceptions\LotteryNotFoundException
+     */
+    public function startNumberRequired($lotteryId)
+    {
+        $lottery = $this->lotteryRepo->find($lotteryId);
+        if (! $lottery) {
+            throw new LotteryNotFoundException('Lottery is not found. (lotteryId=' . $lotteryId . ')');
+        }
+
+        $rules = new IssueRules($lottery->issuerule);
+        return $rules->isStartNumberNeeded();
+    }
+
+    /**
      * @param  int  $lotteryId
      * @param  \Generator|array  $data
      * @return array
