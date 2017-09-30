@@ -3,11 +3,7 @@
 namespace App\Services;
 
 use App\GyTreasure\CodeFormatter;
-use App\GyTreasure\DrawingGeneratorFactory;
-use App\Services\IssueDrawing\IssueDrawingStrategy\DrawDateStrategy;
-use App\Services\IssueDrawing\IssueDrawingStrategy\DrawStartIssuesStrategy;
-use App\Services\IssueDrawing\IssueDrawingStrategy\SelfDrawingStrategy;
-use App\Services\IssueDrawing\IssueDrawingStrategy\SubDayDrawingStrategy;
+use App\Services\IssueDrawing\SmartDateDrawerFactory;
 use Carbon\Carbon;
 
 class IssueDrawerService
@@ -18,21 +14,21 @@ class IssueDrawerService
     protected $generator;
 
     /**
-     * @var \App\Services\IssueDrawerFactory
+     * @var \App\Services\IssueDrawing\SmartDateDrawerFactory
      */
     protected $drawerFactory;
 
     /**
      * IssueDrawerService constructor.
      * @param \App\Services\IssueGeneratorService $generator
-     * @param \App\Services\IssueDrawerFactory $issueDrawerFactory
+     * @param \App\Services\IssueDrawing\SmartDateDrawerFactory $drawerFactory
      */
     public function __construct(
         IssueGeneratorService $generator,
-        IssueDrawerFactory $issueDrawerFactory
+        SmartDateDrawerFactory $drawerFactory
     ) {
         $this->generator     = $generator;
-        $this->drawerFactory = $issueDrawerFactory;
+        $this->drawerFactory = $drawerFactory;
     }
 
     /**
@@ -81,33 +77,10 @@ class IssueDrawerService
      */
     protected function drawNumbers($lotteryId, Carbon $date, &$issues = array())
     {
-        $strategy = $this->generateStrategy($lotteryId);
-        $result   = $strategy->draw($lotteryId, $date);
-        $issues   = $strategy->issues();
+        $drawer   = $this->drawerFactory->make($lotteryId);
+        $result   = $drawer->draw($lotteryId, $date);
+        $issues   = $drawer->issues();
 
         return is_array($result) ? $result : [];
-    }
-
-    /**
-     * @param  int  $lotteryId
-     * @return \App\Services\IssueDrawing\IssueDrawingStrategy\IssueDrawingStrategy
-     */
-    protected function generateStrategy($lotteryId)
-    {
-        if (DrawingGeneratorFactory::isAvailable($lotteryId)) {
-
-            // 自主彩抓号
-            return new SelfDrawingStrategy($this->generator, $this->drawerFactory);
-
-        } elseif ($this->generator->startNumberRequired($lotteryId)) {
-
-            // 官彩抓号 (流水号不是从 1 开始; 未知流水号)
-            return new SubDayDrawingStrategy(new DrawStartIssuesStrategy($this->generator, $this->drawerFactory));
-
-        } else {
-
-            // 官彩抓号 (流水号从 1 开始)
-            return new DrawDateStrategy($this->generator, $this->drawerFactory);
-        }
     }
 }

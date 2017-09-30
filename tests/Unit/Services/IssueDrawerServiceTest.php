@@ -2,55 +2,46 @@
 
 namespace Tests\Unit\Services;
 
-use App\GyTreasure\CodeFormatter;
-use App\Repositories\IssueInfoRepository;
-use App\Services\IssueDrawerFactory;
 use App\Services\IssueDrawerService;
+use App\Services\IssueDrawing\IssueDrawingStrategy\IssueDrawingStrategy;
+use App\Services\IssueDrawing\SmartDateDrawerFactory;
 use App\Services\IssueGeneratorService;
 use Carbon\Carbon;
-use GyTreasure\Tasks\DrawDateTask;
 use Mockery;
 use Tests\TestCase;
 
 class IssueDrawerServiceTest extends TestCase
 {
     /**
-     * @var \Mockery\MockInterface|\App\Repositories\IssueInfoRepository
-     */
-    protected $issueInfoRep;
-
-    /**
      * @var \Mockery\MockInterface|\App\Services\IssueGeneratorService
      */
     protected $generatorMock;
-
-    /**
-     * @var \Mockery\MockInterface|\App\Services\IssueDrawerFactory
-     */
-    protected $factoryMock;
-
-    /**
-     * @var \Mockery\MockInterface|\GyTreasure\Tasks\DrawDateTask
-     */
-    protected $taskMock;
 
     /**
      * @var \App\Services\IssueDrawerService
      */
     protected $drawer;
 
+    /**
+     * @var \Mockery\MockInterface|\App\Services\IssueDrawing\SmartDateDrawerFactory
+     */
+    protected $drawerMock;
+
+    /**
+     * @var \Mockery\MockInterface|\App\Services\IssueDrawing\IssueDrawingStrategy\IssueDrawingStrategy
+     */
+    protected $strategyMock;
+
     protected function setUp()
     {
         parent::setUp();
 
-        $this->issueInfoRep     = Mockery::mock(IssueInfoRepository::class);
-        $this->generatorMock    = Mockery::mock(IssueGeneratorService::class);
-        $this->factoryMock      = Mockery::mock(IssueDrawerFactory::class);
-        $this->taskMock         = Mockery::mock(DrawDateTask::class);
-        $this->drawer           = new IssueDrawerService(
-            $this->issueInfoRep,
+        $this->generatorMock      = Mockery::mock(IssueGeneratorService::class);
+        $this->drawerMock         = Mockery::mock(SmartDateDrawerFactory::class);
+        $this->strategyMock       = Mockery::mock(IssueDrawingStrategy::class);
+        $this->drawer             = new IssueDrawerService(
             $this->generatorMock,
-            $this->factoryMock
+            $this->drawerMock
         );
     }
 
@@ -66,20 +57,17 @@ class IssueDrawerServiceTest extends TestCase
         $lotteryid = 1;
         $date = new Carbon('2017-07-20');
 
-        $issues = [
-            [
-                'issue' => '20170720-001',
-                'earliestwritetime' => new Carbon('2017-07-17 00:05:30'),
-                'code' => '',
-            ],
-            [
-                'issue' => '20170720-002',
-                'earliestwritetime' => new Carbon('2017-07-17 00:10:30'),
-                'code' => '',
-            ],
-        ];
+        $issues = [[
+            'issue' => '20170720-001',
+            'earliestwritetime' => new Carbon('2017-07-17 00:05:30'),
+            'code' => '',
+        ], [
+            'issue' => '20170720-002',
+            'earliestwritetime' => new Carbon('2017-07-17 00:10:30'),
+            'code' => '',
+        ]];
 
-        $draws = [[
+        $taskReturns = [[
             'winningNumbers' => ['3', '6', '5', '8', '2'],
             'issue' => '20170720-001',
         ], [
@@ -97,27 +85,21 @@ class IssueDrawerServiceTest extends TestCase
             'code' => '09123',
         ]];
 
-        $this->generatorMock
-            ->shouldReceive('generate')
-            ->once()
-            ->with($lotteryid, $date)
-            ->andReturnUsing(function () use ($issues) {
-                foreach ($issues as $row) {
-                    yield $row;
-                }
-            });
-
-        $this->factoryMock
-            ->shouldReceive('makeDrawDateTask')
+        $this->drawerMock
+            ->shouldReceive('make')
             ->once()
             ->with($lotteryid)
-            ->andReturn($this->taskMock);
+            ->andReturn($this->strategyMock);
 
-        $this->taskMock
-            ->shouldReceive('run')
-            ->once()
-            ->with($date, array_column($issues, 'issue'))
-            ->andReturn($draws);
+        $this->strategyMock
+            ->shouldReceive('draw')
+            ->with($lotteryid, $date)
+            ->andReturn($taskReturns);
+
+        $this->strategyMock
+            ->shouldReceive('issues')
+            ->withNoArgs()
+            ->andReturn($issues);
 
         $this->generatorMock
             ->shouldReceive('save')
@@ -125,6 +107,6 @@ class IssueDrawerServiceTest extends TestCase
             ->andReturn($expects);
 
         $returnArray = $this->drawer->drawDate($lotteryid, $date);
-        $this->assertEquals($expects, $returnArray);
+        $this->assertSame($expects, $returnArray);
     }
 }

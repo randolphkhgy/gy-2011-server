@@ -17,7 +17,7 @@ class DrawStartIssuesStrategy extends IssueDrawingStrategy
      */
     public function draw($lotteryId, Carbon $date, $startNumber = null)
     {
-        $drawStartIssuesTask = $this->drawerFactory->makeDrawStartIssuesTask($lotteryId);
+        $drawStartIssuesTask = $this->taskFactory->makeDrawStartIssuesTask($lotteryId);
 
         $data = $drawStartIssuesTask->run($date);
 

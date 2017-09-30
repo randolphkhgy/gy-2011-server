@@ -17,7 +17,7 @@ class DrawDateStrategy extends GenerateIssuesStrategy
      */
     protected function drawProcess($lotteryId, Carbon $date, array $issues)
     {
-        $drawDateTask = $this->drawerFactory->makeDrawDateTask($lotteryId);
+        $drawDateTask = $this->taskFactory->makeDrawDateTask($lotteryId);
 
         if ($issues && $drawDateTask) {
             return $drawDateTask->run($date, $issues);

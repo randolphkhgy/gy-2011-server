@@ -2,7 +2,6 @@
 
 namespace App\Services\IssueDrawing\IssueDrawingStrategy;
 
-use App\GyTreasure\IssueSetCollectionFactory;
 use Carbon\Carbon;
 
 class SubDayDrawingStrategy extends IssueDrawingStrategy
@@ -18,7 +17,7 @@ class SubDayDrawingStrategy extends IssueDrawingStrategy
      */
     public function __construct(IssueDrawingStrategy $strategy)
     {
-        parent::__construct($strategy->generator, $strategy->drawerFactory);
+        parent::__construct($strategy->generator, $strategy->taskFactory);
         $this->strategy = $strategy;
     }
 
@@ -33,8 +32,8 @@ class SubDayDrawingStrategy extends IssueDrawingStrategy
      */
     public function draw($lotteryId, Carbon $date, $startNumber = null)
     {
-        $issueSetCollection = (new IssueSetCollectionFactory)->make($lotteryId);
-        if (! $issueSetCollection || ! ($firstEarliestWriteTime = $issueSetCollection->firstEarliestWriteTime($date))) {
+        $firstEarliestWriteTime = $this->generator->firstEarliestWriteTime($lotteryId, $date);
+        if (! $firstEarliestWriteTime) {
 
             $this->issues = [];
             return null;

@@ -6,7 +6,7 @@ use App\GyTreasure\DrawDateTaskFactory;
 use App\GyTreasure\DrawStartIssuesTaskFactory;
 use GyTreasure\Drawer;
 
-class IssueDrawerFactory
+class IssueDrawerTaskFactory
 {
     /**
      * @var \App\GyTreasure\DrawDateTaskFactory
@@ -27,7 +27,7 @@ class IssueDrawerFactory
         DrawDateTaskFactory $drawDateTaskFactory,
         DrawStartIssuesTaskFactory $drawStartIssuesTaskFactory
     ) {
-        $this->drawDateTaskFactory  = $drawDateTaskFactory;
+        $this->drawDateTaskFactory          = $drawDateTaskFactory;
         $this->drawStartIssuesTaskFactory   = $drawStartIssuesTaskFactory;
     }
 

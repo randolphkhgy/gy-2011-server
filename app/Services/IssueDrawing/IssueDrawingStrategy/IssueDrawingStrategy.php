@@ -2,7 +2,7 @@
 
 namespace App\Services\IssueDrawing\IssueDrawingStrategy;
 
-use App\Services\IssueDrawerFactory;
+use App\Services\IssueDrawerTaskFactory;
 use App\Services\IssueGeneratorService;
 use Carbon\Carbon;
 
@@ -19,21 +19,21 @@ abstract class IssueDrawingStrategy
     protected $generator;
 
     /**
-     * @var \App\Services\IssueDrawerFactory
+     * @var \App\Services\IssueDrawerTaskFactory
      */
-    protected $drawerFactory;
+    protected $taskFactory;
 
     /**
      * IssueDrawingStrategy constructor.
-     * @param  \App\Services\IssueGeneratorService  $generator
-     * @param  \App\Services\IssueDrawerFactory     $drawerFactory
+     * @param  \App\Services\IssueGeneratorService   $generator
+     * @param  \App\Services\IssueDrawerTaskFactory  $taskFactory
      */
     public function __construct(
         IssueGeneratorService $generator,
-        IssueDrawerFactory $drawerFactory
+        IssueDrawerTaskFactory $taskFactory
     ) {
-        $this->generator     = $generator;
-        $this->drawerFactory = $drawerFactory;
+        $this->generator   = $generator;
+        $this->taskFactory = $taskFactory;
     }
 
     /**

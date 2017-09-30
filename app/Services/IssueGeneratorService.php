@@ -10,6 +10,7 @@ use App\Exceptions\LotteryNotFoundException;
 use Carbon\Carbon;
 use GyTreasure\Issue\GeneratorFactory;
 use GyTreasure\Issue\IssueGenerator\LegacyIssueRules\IssueRules;
+use GyTreasure\Issue\IssueGenerator\LegacyIssueRules\IssueSetCollection;
 
 class IssueGeneratorService
 {
@@ -139,5 +140,21 @@ class IssueGeneratorService
         } else {
             return 1;
         }
+    }
+
+    /**
+     * @param  int  $lotteryId
+     * @param  \Carbon\Carbon  $date
+     * @return \Carbon\Carbon|null
+     */
+    public function firstEarliestWriteTime($lotteryId, Carbon $date)
+    {
+        $lottery = $this->lotteryRepo->find($lotteryId);
+        if (! $lottery) {
+            throw new LotteryNotFoundException('Lottery is not found. (lotteryId=' . $lotteryId . ')');
+        }
+
+        $issueSetCollection = IssueSetCollection::loadRaw($lottery->issueset);
+        return $issueSetCollection->firstEarliestWriteTime($date);
     }
 }
