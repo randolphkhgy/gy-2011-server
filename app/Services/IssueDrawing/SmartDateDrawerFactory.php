@@ -5,6 +5,7 @@ namespace App\Services\IssueDrawing;
 use App\GyTreasure\DrawingGeneratorFactory;
 use App\Services\IssueDrawerTaskFactory;
 use App\Services\IssueDrawing\IssueDrawingStrategy\DrawDateStrategy;
+use App\Services\IssueDrawing\IssueDrawingStrategy\DrawnResumeStrategy;
 use App\Services\IssueDrawing\IssueDrawingStrategy\DrawStartIssuesStrategy;
 use App\Services\IssueDrawing\IssueDrawingStrategy\SelfDrawingStrategy;
 use App\Services\IssueDrawing\IssueDrawingStrategy\SubDayDrawingStrategy;
@@ -46,7 +47,7 @@ class SmartDateDrawerFactory
             /*
              * 自主彩抓号
              */
-            return new SelfDrawingStrategy($this->generator, $this->taskFactory);
+            $resumeStrategy = $normalStrategy = new SelfDrawingStrategy($this->generator, $this->taskFactory);
 
         } elseif ($this->generator->startNumberRequired($lotteryId)) {
 
@@ -57,7 +58,12 @@ class SmartDateDrawerFactory
              * SubDayDrawingStrategy   - 必要時從前一天開始抓號
              * DrawStartIssuesStrategy - 先抓號判斷開始流水號
              */
-            return new SubDayDrawingStrategy(new DrawStartIssuesStrategy($this->generator, $this->taskFactory));
+            $normalStrategy = new SubDayDrawingStrategy(new DrawStartIssuesStrategy($this->generator, $this->taskFactory));
+
+            /*
+             * 官彩抓号 (补抓号码).
+             */
+            $resumeStrategy = new DrawDateStrategy($this->generator, $this->taskFactory);
 
         } else {
 
@@ -66,7 +72,12 @@ class SmartDateDrawerFactory
              *
              * DrawDateStrategy - 一般官彩抓号程序
              */
-            return new DrawDateStrategy($this->generator, $this->taskFactory);
+            $resumeStrategy = $normalStrategy = new DrawDateStrategy($this->generator, $this->taskFactory);
         }
+
+        /*
+         * 资料库有资料时使用补抓号码程序，否则使用正常程序.
+         */
+        return new DrawnResumeStrategy($resumeStrategy, $normalStrategy);
     }
 }

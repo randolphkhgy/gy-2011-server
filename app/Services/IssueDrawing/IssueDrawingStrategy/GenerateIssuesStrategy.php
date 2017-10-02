@@ -29,5 +29,17 @@ abstract class GenerateIssuesStrategy extends IssueDrawingStrategy
      * @param  array  $issues
      * @return array|null
      */
+    public function drawIssues($lotteryId, Carbon $date, array $issues)
+    {
+        $this->issues = $issues;
+        return $this->drawProcess($lotteryId, $date, array_column($issues, 'issue'));
+    }
+
+    /**
+     * @param  int    $lotteryId
+     * @param  \Carbon\Carbon  $date
+     * @param  array  $issues
+     * @return array|null
+     */
     abstract protected function drawProcess($lotteryId, Carbon $date, array $issues);
 }

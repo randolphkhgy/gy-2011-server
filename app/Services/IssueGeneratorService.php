@@ -91,7 +91,7 @@ class IssueGeneratorService
     public function save($lotteryId, $data)
     {
         ($data instanceof \Traversable) && ($data = iterator_to_array($data));
-        $this->issueInfoRepo->generateBatch($lotteryId, $data);
+        $this->issueInfoRepo->generateInBatch($lotteryId, $data);
         return $data;
     }
 
@@ -156,5 +156,20 @@ class IssueGeneratorService
 
         $issueSetCollection = IssueSetCollection::loadRaw($lottery->issueset);
         return $issueSetCollection->firstEarliestWriteTime($date);
+    }
+
+    /**
+     * @param  int  $lotteryId
+     * @param  \Carbon\Carbon  $date
+     * @return array|null  回传需要抓号的期号.  若无任何需要抓号期号回传空阵列, 若资料库无任何期号则回传 null.
+     */
+    public function notDrawnIssues($lotteryId, Carbon $date)
+    {
+        $query = $this->issueInfoRepo->lottery($lotteryId)->date($date);
+        if ($query->count()) {
+            return $query->drawingNeeded()->issues();
+        } else {
+            return null;
+        }
     }
 }

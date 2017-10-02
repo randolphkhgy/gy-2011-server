@@ -36,7 +36,7 @@ class IssueInfoRepository extends BaseRepository
      * @param  array  $array
      * @return bool
      */
-    public function generateBatch($lotteryId, $array)
+    public function generateInBatch($lotteryId, $array)
     {
         $data   = $this->combineIssues($lotteryId, $array);
         $this->setRowsDefaults($data);
@@ -44,6 +44,50 @@ class IssueInfoRepository extends BaseRepository
         $writer = app()->make(IssueInfoWriter::class);
         $writer->write($data);
         return true;
+    }
+
+    /**
+     * 彩种.
+     *
+     * @param  int  $lotteryId
+     * @return $this
+     */
+    public function lottery($lotteryId)
+    {
+        $this->model = $this->model->where('lotteryid', $lotteryId);
+        return $this;
+    }
+
+    /**
+     * @param  \Carbon\Carbon  $date
+     * @return $this
+     */
+    public function date(Carbon $date)
+    {
+        $this->model = $this->model->where('belongdate', $date->toDateString());
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    public function drawingNeeded()
+    {
+        $this->model = $this->model
+            ->where('statusfetch', 0)
+            ->where('earliestwritetime', '<=', Carbon::now());
+        return $this;
+    }
+
+    /**
+     * 期号 meta 资料, 不含状态资料及开奖号.
+     * 例: 不含 code, statusfetch....
+     *
+     * @return array
+     */
+    public function issues()
+    {
+        return $this->model->select(['issue', 'belongdate', 'salestart', 'saleend', 'canneldeadline', 'earliestwritetime'])->get()->toArray();
     }
 
     /**
@@ -94,5 +138,13 @@ class IssueInfoRepository extends BaseRepository
         $this->model = $query;
 
         return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function count()
+    {
+        return $this->model->count();
     }
 }

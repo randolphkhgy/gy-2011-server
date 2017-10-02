@@ -35,33 +35,35 @@ class IssueDrawerService
      * 指定日期抓号.
      *
      * @param  int  $lotteryId
-     * @param  \Carbon\Carbon $date
+     * @param  \Carbon\Carbon  $date
      * @return array
      *
      * @throws \App\Exceptions\LotteryNotFoundException
      */
     public function drawDate($lotteryId, Carbon $date)
     {
-        $data  = $this->drawNumbers($lotteryId, $date, $issues);
+        $drawn = $this->drawNumbers($lotteryId, $date, $issues);
+        $data  = $this->combineResult($lotteryId, $drawn, $issues);
+
         if (! $data) {
             // 抓不到资料.
             return [];
         }
 
-        $array = array_map(function ($draw, $issue) use ($lotteryId) {
+        return $this->generator->save($lotteryId, $data);
+    }
 
-            if ($draw) {
-                $issue['code']        = CodeFormatter::format($lotteryId, $draw['winningNumbers']);
-                $issue['writetime']   = Carbon::now();
-                $issue['writeid']     = 255;
-                $issue['statusfetch'] = 2;
-                $issue['statuscode']  = 2;
-            }
-
-            return $issue;
-        }, $data, $issues);
-
-        return $this->generator->save($lotteryId, $array);
+    /**
+     * @param  array  $draws
+     * @param  array  $issues
+     * @return array
+     */
+    protected function filterAvailableDraws(array $draws, array $issues)
+    {
+        $availableIssues = array_column($issues, 'issue');
+        return array_filter($draws, function ($row) use ($availableIssues) {
+            return in_array($row['issue'], $availableIssues);
+        });
     }
 
     /**
@@ -82,5 +84,47 @@ class IssueDrawerService
         $issues   = $drawer->issues();
 
         return is_array($result) ? $result : [];
+    }
+
+    /**
+     * @param  array|null  $issues
+     * @return array|null
+     */
+    protected function sortIssues($issues)
+    {
+        if (is_array($issues)) {
+            usort($issues, function ($a, $b) {
+                if ($a['issue'] == $b['issue']) {
+                    return 0;
+                }
+                return ($a['issue'] < $b['issue']) ? -1 : 1;
+            });
+        }
+        return $issues;
+    }
+
+    /**
+     * @param  int         $lotteryId
+     * @param  array|null  $drawn
+     * @param  array       $issues
+     * @return array
+     */
+    protected function combineResult($lotteryId, array $drawn, $issues)
+    {
+        $drawn  = $this->sortIssues($this->filterAvailableDraws($drawn, $issues));
+        $issues = $this->sortIssues($issues);
+
+        return array_map(function ($draw, $issue) use ($lotteryId) {
+
+            if ($draw) {
+                $issue['code'] = CodeFormatter::format($lotteryId, $draw['winningNumbers']);
+                $issue['writetime'] = Carbon::now();
+                $issue['writeid'] = 255;
+                $issue['statusfetch'] = 2;
+                $issue['statuscode'] = 2;
+            }
+
+            return $issue;
+        }, $drawn, $issues);
     }
 }
