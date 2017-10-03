@@ -8,7 +8,6 @@ use App\Repositories\IssueInfoRepository;
 use App\Repositories\LotteryRepository;
 use App\Exceptions\LotteryNotFoundException;
 use Carbon\Carbon;
-use GyTreasure\Issue\GeneratorFactory;
 use GyTreasure\Issue\IssueGenerator\LegacyIssueRules\IssueRules;
 use GyTreasure\Issue\IssueGenerator\LegacyIssueRules\IssueSetCollection;
 

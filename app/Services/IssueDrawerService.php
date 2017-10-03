@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\GyTreasure\CodeFormatter;
+use App\Services\IssueDrawing\IssueDrawnCombine;
 use App\Services\IssueDrawing\SmartDateDrawerFactory;
 use Carbon\Carbon;
 
@@ -42,89 +43,62 @@ class IssueDrawerService
      */
     public function drawDate($lotteryId, Carbon $date)
     {
-        $drawn = $this->drawNumbers($lotteryId, $date, $issues);
-        $data  = $this->combineResult($lotteryId, $drawn, $issues);
+        /* 抓取期号及抓号资料 */
+        $info = $this->drawNumbers($lotteryId, $date);
 
+        /* 合并期号及抓号资料 */
+        $data = $this->combineResult($lotteryId, $info['drawn'], $info['issues']);
+
+        /* 没有任何资料不需要储存结果 */
         if (! $data) {
-            // 抓不到资料.
             return [];
         }
 
+        /* 储存结果 */
         return $this->generator->save($lotteryId, $data);
     }
 
     /**
-     * @param  array  $draws
-     * @param  array  $issues
-     * @return array
-     */
-    protected function filterAvailableDraws(array $draws, array $issues)
-    {
-        $availableIssues = array_column($issues, 'issue');
-        return array_filter($draws, function ($row) use ($availableIssues) {
-            return in_array($row['issue'], $availableIssues);
-        });
-    }
-
-    /**
      * 指定日期抓号.
-     * 不含写入.
      *
      * @param  int  $lotteryId
      * @param  \Carbon\Carbon $date
-     * @param  array  $issues
      * @return array
      *
      * @throws \App\Exceptions\LotteryNotFoundException
      */
-    protected function drawNumbers($lotteryId, Carbon $date, &$issues = array())
+    protected function drawNumbers($lotteryId, Carbon $date)
     {
         $drawer   = $this->drawerFactory->make($lotteryId);
-        $result   = $drawer->draw($lotteryId, $date);
+
+        /* 取得抓号资料 */
+        $drawn    = (array) $drawer->draw($lotteryId, $date);
+
+        /* 取得期号资料 */
         $issues   = $drawer->issues();
 
-        return is_array($result) ? $result : [];
+        return compact('drawn', 'issues');
     }
 
     /**
-     * @param  array|null  $issues
-     * @return array|null
-     */
-    protected function sortIssues($issues)
-    {
-        if (is_array($issues)) {
-            usort($issues, function ($a, $b) {
-                if ($a['issue'] == $b['issue']) {
-                    return 0;
-                }
-                return ($a['issue'] < $b['issue']) ? -1 : 1;
-            });
-        }
-        return $issues;
-    }
-
-    /**
-     * @param  int         $lotteryId
-     * @param  array|null  $drawn
-     * @param  array       $issues
+     * 合并奖期及抓号资料.
+     *
+     * @param  int    $lotteryId
+     * @param  array  $drawn
+     * @param  array  $issues
      * @return array
      */
-    protected function combineResult($lotteryId, array $drawn, $issues)
+    protected function combineResult($lotteryId, array $drawn, array $issues)
     {
-        $drawn  = $this->sortIssues($this->filterAvailableDraws($drawn, $issues));
-        $issues = $this->sortIssues($issues);
-
-        return array_map(function ($draw, $issue) use ($lotteryId) {
-
-            if ($draw) {
-                $issue['code'] = CodeFormatter::format($lotteryId, $draw['winningNumbers']);
-                $issue['writetime'] = Carbon::now();
-                $issue['writeid'] = 255;
-                $issue['statusfetch'] = 2;
-                $issue['statuscode'] = 2;
-            }
-
+        $handler = IssueDrawnCombine::create()->setIssues($issues)->setDrawn($drawn);
+        return $handler->combine(function ($issue, $drawn) use ($lotteryId) {
+            $issue['code']        = CodeFormatter::format($lotteryId, $drawn['winningNumbers']);
+            $issue['writetime']   = Carbon::now();
+            $issue['writeid']     = 255;
+            $issue['statusfetch'] = 2;
+            $issue['statuscode']  = 2;
             return $issue;
-        }, $drawn, $issues);
+        });
     }
+
 }
