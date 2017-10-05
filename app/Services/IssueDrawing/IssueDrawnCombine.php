@@ -94,7 +94,7 @@ class IssueDrawnCombine
         $drawn           = $this->filterDrawn($this->drawn);
 
         /* 建立抓号资料索引 */
-        $drawnIndexTable = array_flip(array_column($drawn, 'issue'));
+        $drawnIndexTable = array_flip(array_unique(array_column($drawn, 'issue')));
 
         return function ($issue) use ($drawn, $drawnIndexTable) {
 

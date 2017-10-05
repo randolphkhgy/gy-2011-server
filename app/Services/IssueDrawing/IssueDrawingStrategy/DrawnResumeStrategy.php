@@ -23,7 +23,7 @@ class DrawnResumeStrategy extends IssueDrawingStrategy
      */
     public function __construct(GenerateIssuesStrategy $strategy, IssueDrawingStrategy $fallbackStrategy = null)
     {
-        parent::__construct($strategy->generator, $strategy->taskFactory);
+        parent::__construct($strategy->generator(), $strategy->taskFactory());
         $this->strategy             = $strategy;
 
         if ($fallbackStrategy === null) {

@@ -17,7 +17,7 @@ class SubDayDrawingStrategy extends IssueDrawingStrategy
      */
     public function __construct(IssueDrawingStrategy $strategy)
     {
-        parent::__construct($strategy->generator, $strategy->taskFactory);
+        parent::__construct($strategy->generator(), $strategy->taskFactory());
         $this->strategy = $strategy;
     }
 
@@ -47,8 +47,8 @@ class SubDayDrawingStrategy extends IssueDrawingStrategy
 
             if ($prevDayIssues) {
 
-                $lastIssue     = array_last($prevDayIssues);
-                $startNumber   = $this->generator->getNumberFromIssue($lastIssue['issue'], $lotteryId) + 1;
+                $lastIssue     = $this->getLastIssue($prevDayIssues);
+                $startNumber   = $this->generator->getNumberFromIssue($lastIssue, $lotteryId) + 1;
 
                 $oriDateIssues = iterator_to_array($this->generator->generate($lotteryId, $date, $startNumber));
                 $this->issues  = array_merge($this->strategy->issues(), $oriDateIssues);
@@ -65,5 +65,16 @@ class SubDayDrawingStrategy extends IssueDrawingStrategy
             $this->issues = $this->strategy->issues();
             return $result;
         }
+    }
+
+    /**
+     * @param  array  $array
+     * @return string
+     */
+    protected function getLastIssue($array)
+    {
+        $issues = array_column($array, 'issue');
+        rsort($issues);
+        return head($issues);
     }
 }

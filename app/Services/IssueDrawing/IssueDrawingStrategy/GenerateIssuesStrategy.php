@@ -20,7 +20,7 @@ abstract class GenerateIssuesStrategy extends IssueDrawingStrategy
         $issues         = $this->generateIssues($lotteryId, $date, $startNumber);
         $filteredIssues = $this->filterNeededDrawing($issues);
 
-        return $this->drawProcess($lotteryId, $date, $filteredIssues);
+        return $this->drawProcess($lotteryId, $date, array_column($filteredIssues, 'issue'));
     }
 
     /**

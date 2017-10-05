@@ -37,6 +37,22 @@ abstract class IssueDrawingStrategy
     }
 
     /**
+     * @return \App\Services\IssueGeneratorService
+     */
+    public function generator()
+    {
+        return $this->generator;
+    }
+
+    /**
+     * @return \App\Services\IssueDrawerTaskFactory
+     */
+    public function taskFactory()
+    {
+        return $this->taskFactory;
+    }
+
+    /**
      * @param  int       $lotteryId
      * @param  \Carbon\Carbon  $date
      * @param  int|null  $startNumber
@@ -72,8 +88,8 @@ abstract class IssueDrawingStrategy
      */
     protected function filterNeededDrawing(array $array)
     {
-        return array_column(array_filter($array, function ($number) {
+        return array_filter($array, function ($number) {
             return empty($number['code']) && $number['earliestwritetime']->isPast();
-        }), 'issue');
+        });
     }
 }

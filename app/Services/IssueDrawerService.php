@@ -72,6 +72,7 @@ class IssueDrawerService
         $drawer   = $this->drawerFactory->make($lotteryId);
 
         /* 取得抓号资料 */
+        // 抓号失败回传 null 时，会被转型成空阵列资料
         $drawn    = (array) $drawer->draw($lotteryId, $date);
 
         /* 取得期号资料 */

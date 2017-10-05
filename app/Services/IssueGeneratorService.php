@@ -42,7 +42,7 @@ class IssueGeneratorService
      * @param  int|null        $startNumber
      * @return \Generator
      *
-     * @throws \App\Exceptions\LotteryNotFoundException
+     * @throws \App\Exceptions\LotteryNotFoundException 找不到彩种
      * @throws \App\Exceptions\LotteryStartNumberRequiredException
      */
     public function generate($lotteryId, Carbon $date, $startNumber = null)
@@ -69,7 +69,7 @@ class IssueGeneratorService
      * @param  int  $lotteryId
      * @return bool
      *
-     * @throws \App\Exceptions\LotteryNotFoundException
+     * @throws \App\Exceptions\LotteryNotFoundException 找不到彩种
      */
     public function startNumberRequired($lotteryId)
     {
@@ -100,7 +100,7 @@ class IssueGeneratorService
      * @param  int|null        $startNumber
      * @return array
      *
-     * @throws \App\Exceptions\LotteryNotFoundException
+     * @throws \App\Exceptions\LotteryNotFoundException 找不到彩种
      * @throws \App\Exceptions\LotteryStartNumberRequiredException
      */
     public function generateAndSave($lotteryId, Carbon $date, $startNumber = null)
@@ -114,6 +114,8 @@ class IssueGeneratorService
      * @param  string  $issue
      * @param  int     $lotteryId
      * @return int|null
+     *
+     * @throws \App\Exceptions\LotteryNotFoundException 找不到彩种
      */
     public function getNumberFromIssue($issue, $lotteryId)
     {
@@ -129,6 +131,7 @@ class IssueGeneratorService
     /**
      * @param  \App\Models\Lottery  $lottery
      * @return int
+     *
      * @throws \App\Exceptions\LotteryStartNumberRequiredException
      */
     protected function startNumber($lottery)
@@ -145,6 +148,8 @@ class IssueGeneratorService
      * @param  int  $lotteryId
      * @param  \Carbon\Carbon  $date
      * @return \Carbon\Carbon|null
+     *
+     * @throws \App\Exceptions\LotteryNotFoundException 找不到彩种
      */
     public function firstEarliestWriteTime($lotteryId, Carbon $date)
     {
