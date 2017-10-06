@@ -3,41 +3,19 @@
 namespace App\Services;
 
 use App\GyTreasure\DrawDateTaskFactory;
+use App\GyTreasure\DrawIssueTaskFactory;
 use App\GyTreasure\DrawStartIssuesTaskFactory;
 use GyTreasure\Drawer;
 
 class IssueDrawerTaskFactory
 {
     /**
-     * @var \App\GyTreasure\DrawDateTaskFactory
-     */
-    protected $drawDateTaskFactory;
-
-    /**
-     * @var \App\GyTreasure\DrawStartIssuesTaskFactory
-     */
-    protected $drawStartIssuesTaskFactory;
-
-    /**
-     * IssueDrawerService constructor.
-     * @param \App\GyTreasure\DrawDateTaskFactory $drawDateTaskFactory
-     * @param \App\GyTreasure\DrawStartIssuesTaskFactory $drawStartIssuesTaskFactory
-     */
-    public function __construct(
-        DrawDateTaskFactory $drawDateTaskFactory,
-        DrawStartIssuesTaskFactory $drawStartIssuesTaskFactory
-    ) {
-        $this->drawDateTaskFactory          = $drawDateTaskFactory;
-        $this->drawStartIssuesTaskFactory   = $drawStartIssuesTaskFactory;
-    }
-
-    /**
      * @param  int  $lotteryId
      * @return \GyTreasure\Tasks\DrawDateTask|null
      */
     public function makeDrawDateTask($lotteryId)
     {
-        return $this->drawDateTaskFactory->make($lotteryId);
+        return app()->make(DrawDateTaskFactory::class)->make($lotteryId);
     }
 
     /**
@@ -46,7 +24,16 @@ class IssueDrawerTaskFactory
      */
     public function makeDrawStartIssuesTask($lotteryId)
     {
-        return $this->drawStartIssuesTaskFactory->make($lotteryId);
+        return app()->make(DrawStartIssuesTaskFactory::class)->make($lotteryId);
+    }
+
+    /**
+     * @param  int  $lotteryId
+     * @return \GyTreasure\Tasks\DrawIssueTask|null
+     */
+    public function makeDrawIssueTask($lotteryId)
+    {
+        return app()->make(DrawIssueTaskFactory::class)->make($lotteryId);
     }
 
     /**

@@ -6,6 +6,7 @@ use App\GyTreasure\DrawingGeneratorFactory;
 use App\Services\IssueDrawerTaskFactory;
 use App\Services\IssueDrawing\IssueDrawingStrategy\DrawDateStrategy;
 use App\Services\IssueDrawing\IssueDrawingStrategy\DrawnResumeStrategy;
+use App\Services\IssueDrawing\IssueDrawingStrategy\DrawSingleStrategy;
 use App\Services\IssueDrawing\IssueDrawingStrategy\DrawStartIssuesStrategy;
 use App\Services\IssueDrawing\IssueDrawingStrategy\SelfDrawingStrategy;
 use App\Services\IssueDrawing\IssueDrawingStrategy\SubDayDrawingStrategy;
@@ -52,7 +53,7 @@ class SmartDateDrawerFactory
         } elseif ($this->generator->startNumberRequired($lotteryId)) {
 
             /*
-             * 官彩抓号 (流水号不是从 1 开始，並且無法得知開始流水号)
+             * 官彩抓号 (流水号不是从 1 开始，並且無法得知開始流水号).
              *
              * 类别功用:
              * SubDayDrawingStrategy   - 必要時從前一天開始抓號
@@ -62,17 +63,21 @@ class SmartDateDrawerFactory
 
             /*
              * 官彩抓号 (补抓号码).
+             *
+             * DrawSingleStrategy      - 需要时改调用适用于只抓一期的 API
+             * DrawDateStrategy        - 一般官彩抓号程序
              */
-            $resumeStrategy = new DrawDateStrategy($this->generator, $this->taskFactory);
+            $resumeStrategy = new DrawSingleStrategy(new DrawDateStrategy($this->generator, $this->taskFactory));
 
         } else {
 
             /*
              * 官彩抓号 (流水号从 1 开始)
              *
-             * DrawDateStrategy - 一般官彩抓号程序
+             * DrawSingleStrategy      - 需要时改调用适用于只抓一期的 API
+             * DrawDateStrategy        - 一般官彩抓号程序
              */
-            $resumeStrategy = $normalStrategy = new DrawDateStrategy($this->generator, $this->taskFactory);
+            $resumeStrategy = $normalStrategy = new DrawSingleStrategy(new DrawDateStrategy($this->generator, $this->taskFactory));
         }
 
         /*
