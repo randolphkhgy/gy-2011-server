@@ -14,7 +14,9 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        //
+        Commands\BulkIssues::class,
+        Commands\IssueDraw::class,
+        Commands\IssueGenerate::class,
     ];
 
     /**
