@@ -4,12 +4,14 @@ namespace App\Services;
 
 use App\Exceptions\LotteryStartNumberRequiredException;
 use App\GyTreasure\IssueGeneratorFactory;
+use App\Repositories\IssueInfoDateRepository;
 use App\Repositories\IssueInfoRepository;
 use App\Repositories\LotteryRepository;
 use App\Exceptions\LotteryNotFoundException;
 use Carbon\Carbon;
 use GyTreasure\Issue\IssueGenerator\LegacyIssueRules\IssueRules;
 use GyTreasure\Issue\IssueGenerator\LegacyIssueRules\IssueSetCollection;
+use Illuminate\Support\Collection;
 
 class IssueGeneratorService
 {
@@ -24,16 +26,24 @@ class IssueGeneratorService
     protected $issueInfoRepo;
 
     /**
+     * @var \App\Repositories\IssueInfoDateRepository
+     */
+    protected $issueInfoDateRepo;
+
+    /**
      * IssueGeneratorService constructor.
      * @param \App\Repositories\LotteryRepository $lotteryRepo
      * @param \App\Repositories\IssueInfoRepository $issueInfoRepo
+     * @param \App\Repositories\IssueInfoDateRepository $issueInfoDateRepo
      */
     public function __construct(
         LotteryRepository $lotteryRepo,
-        IssueInfoRepository $issueInfoRepo
+        IssueInfoRepository $issueInfoRepo,
+        IssueInfoDateRepository $issueInfoDateRepo
     ) {
         $this->lotteryRepo          = $lotteryRepo;
         $this->issueInfoRepo        = $issueInfoRepo;
+        $this->issueInfoDateRepo    = $issueInfoDateRepo;
     }
 
     /**
@@ -175,5 +185,22 @@ class IssueGeneratorService
         } else {
             return null;
         }
+    }
+
+    /**
+     * @param  int  $maxDays
+     * @return \Illuminate\Support\Collection
+     */
+    public function needDrawIssueGroup($maxDays)
+    {
+        return $this->issueInfoDateRepo->needDrawIssueGroup($maxDays);
+    }
+
+    /**
+     * @return \App\Models\IssueInfo|null
+     */
+    public function nextDraw()
+    {
+        return $this->issueInfoRepo->nextDraw();
     }
 }

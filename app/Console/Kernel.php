@@ -17,6 +17,7 @@ class Kernel extends ConsoleKernel
         Commands\BulkIssues::class,
         Commands\IssueDraw::class,
         Commands\IssueGenerate::class,
+        Commands\IssueResume::class,
     ];
 
     /**

@@ -3,6 +3,7 @@
 namespace Tests\Unit\Services;
 
 use App\Models\IssueInfo;
+use App\Repositories\IssueInfoDateRepository;
 use App\Repositories\IssueInfoRepository;
 use App\Repositories\LotteryRepository;
 use App\Services\IssueGeneratorService;
@@ -38,6 +39,11 @@ class IssueGeneratorServiceTest extends TestCase
     protected $drawDateTaskFactoryMock;
 
     /**
+     * @var \Mockery\MockInterface|\App\Repositories\IssueInfoDateRepository
+     */
+    protected $issueInfoDateRepoMock;
+
+    /**
      * @var \App\Services\IssueGeneratorService
      */
     protected $service;
@@ -49,9 +55,11 @@ class IssueGeneratorServiceTest extends TestCase
         $this->lotteryRepoMock          = Mockery::mock(LotteryRepository::class);
         $this->issueInfoRepoMock        = Mockery::mock(IssueInfoRepository::class);
         $this->issueInfoMock            = Mockery::mock(IssueInfo::class);
+        $this->issueInfoDateRepoMock    = Mockery::mock(IssueInfoDateRepository::class);
         $this->service                  = new IssueGeneratorService(
             $this->lotteryRepoMock,
-            $this->issueInfoRepoMock
+            $this->issueInfoRepoMock,
+            $this->issueInfoDateRepoMock
         );
     }
 

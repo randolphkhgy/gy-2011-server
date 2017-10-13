@@ -87,7 +87,22 @@ class IssueInfoRepository extends BaseRepository
      */
     public function issues()
     {
-        return $this->model->select(['issue', 'belongdate', 'salestart', 'saleend', 'canneldeadline', 'earliestwritetime'])->get()->toArray();
+        return $this->all(['issue', 'belongdate', 'salestart', 'saleend', 'canneldeadline', 'earliestwritetime'])->toArray();
+    }
+
+    /**
+     * 取得下一个抓取的期号.
+     *
+     * @return \App\Models\IssueInfo|null
+     */
+    public function nextDraw()
+    {
+        $this->model = $this->model
+            ->where('statusfetch', 0)
+            ->where('earliestwritetime', '>', Carbon::now())
+            ->orderBy('earliestwritetime', 'asc')
+            ->take(1);
+        return $this->first();
     }
 
     /**
